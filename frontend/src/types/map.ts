@@ -1,12 +1,12 @@
 export type ElementType = 'fila' | 'mesa';
 
 export interface Seat {
-  identificador: string; 
+  identificador: string;
 }
 
 export interface BaseElement {
   tipo: ElementType;
-  etiqueta: string; 
+  etiqueta: string;
   precio: number;
 }
 
@@ -23,7 +23,7 @@ export interface TableElement extends BaseElement {
 export type MapElement = RowElement | TableElement;
 
 export interface Area {
-  id?: string;
+  id: string;
   nombre_area: string;
   color?: string;
   elementos: MapElement[];

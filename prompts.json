@@ -296,6 +296,151 @@
                 "prompt": "Agregale el detalle de las rutas y dame el route.ts general solucionado para evitar problemas de CORS",
                 "notes": "Se implementó un middleware de CORS manual dentro de los Route Handlers para asegurar interoperabilidad con el frontend. Se expandió el README con el catálogo de endpoints para cumplir con la documentación técnica solicitada en la consigna."
             }
+        },
+        {
+            "input":{
+                "timestamp": "2026-03-04T15:52:15-03:00",
+                "tool/model": "Gemini 3 Flash",
+                "purpose": "Inicializar el proyecto Frontend utilizando create-next-app para cumplir con el stack de React, TypeScript y Next.js.",
+                "prompt": "Se utlilizara REACT para el frontend asique las carpetas se generaran automaticamente cuando se inicialize react, la unica carpeta que no crea react (si no me equivoco) Es la de frontend. Teniendo esto en cuenta inicializemos el frontend",
+                "notes": "Se proporcionó el comando npx create-next-app especificando las opciones necesarias para alinearse con los requerimientos de la prueba técnica (TypeScript y estructura de directorios)."
+            }
+        },
+        {
+            "input":{
+                "timestamp": "2026-03-04T16:05:00-03:00",
+                "tool/model": "Gemini 3 Flash",
+                "purpose": "Limpieza de boilerplate de Next.js y sincronización de tipos de datos según los requerimientos de la prueba técnica.",
+                "prompt": "El frontend esta inciializado, actualiza el .gitignore y realiza una limpieza de archivos iniciales. Sinxoniza los tipos",
+                "notes": "Se actualizaron las interfaces de TypeScript en el frontend para reflejar exactamente la estructura del backend, asegurando el cumplimiento de etiquetas obligatorias según el PDF de la consigna. Se indicaron los pasos para limpiar el CSS y la página principal de Next.js."
+            }
+        },
+        {
+            "input":{
+                "timestamp": "2026-03-04T16:20:10-03:00",
+                "tool/model": "Gemini 3 Flash",
+                "purpose": "Creación del cliente de API base en el frontend para establecer la comunicación con el backend.",
+                "prompt": "Inicializa el backend y el frontend para comenzar a trabajar",
+                "notes": "Se proporcionó el código del apiService.ts para centralizar las llamadas HTTP. Se incluyeron instrucciones para ejecutar ambos entornos simultáneamente y se utilizó el alias de importación de Next.js (@/*) configurado en el paso de inicialización."
+            }
+        },
+        {
+            "input":{
+                "timestamp": "2026-03-04T16:32:00-03:00",
+                "tool/model": "Gemini 3.1 Pro",
+                "purpose": "Creación de la página principal (Landing/Dashboard) con opciones de Nuevo Mapa e Importación.",
+                "prompt": "Este es el estilo que debe tener el frontend. Comenzemos con la pagina principal donde podre tener la opcion de crear un nuevo mapa",
+                "notes": "Se implementó la página Home con estilos de Tailwind inspirados en Seats.io. Se requiere instalación de lucide-react."
+            }
+        },
+        {
+            "input":{
+                "timestamp": "2026-03-04T16:45:12-03:00",
+                "tool/model": "Gemini 3 Flash",
+                "purpose": "Creación de la base de componentes UI reutilizables (Atoms/Molecules) para el frontend.",
+                "prompt": "Cuando desarolles el frontend debes hacer todo generando componentes que puedan ser reutilizables",
+                "notes": "Se definieron los componentes Button, Card y Modal en TypeScript, utilizando Tailwind CSS. El Modal incluye la lógica necesaria para cumplir con el requerimiento de confirmación de borrado estipulado en la consigna. Se solicitó la instalación de utilidades de gestión de clases."
+            }
+        },
+        {
+            "input":{
+                "timestamp": "2026-03-04T16:30:15-03:00",
+                "tool/model": "Gemini 3 Flash",
+                "purpose": "Implementación del formulario dinámico de creación de mapas en la página principal utilizando componentes reutilizables.",
+                "prompt": "Ahora avancemos utilizando estos componentes en page.tsx y generando una vista de creacion de Mapa donde le puedas definir el nombre, las areas que tendra, las filas y mesas dentro de las areas con su cantidad de sillas cada una y el precio de las sillas",
+                "notes": "Se integró un estado complejo para manejar el borrador del mapa antes de enviarlo al backend. Se utilizó Lucide React para iconografía y se respetó la estructura jerárquica SeatMap > Area > Elements (Rows/Tables) solicitada. Se implementó el flujo de creación mediante la función importMap del backend."
+            }
+        },
+        {
+            "input":{
+                "timestamp": "2026-03-04T16:43:00-03:00",
+                "tool/model": "Gemini 3 Flash",
+                "purpose": "Implementación de la funcionalidad de carga de mapas desde archivos JSON locales.",
+                "prompt": "Agrega una manera de poder subir in .json con un mapa ya creado",
+                "notes": "Se integró el uso de FileReader API en el frontend para procesar archivos locales y sincronizarlos con el backend. Se mantuvo la consistencia visual utilizando los componentes de UI previamente definidos y se aplicó la lógica de redirección post-importación."
+            }
+        },
+        {
+            "input":{
+                "timestamp": "2026-03-04T16:40:15-03:00",
+                "tool/model": "Gemini 3 Flash",
+                "purpose": "Corrección de CORS en el backend y lógica de nomenclatura de elementos en el frontend.",
+                "prompt": "Las filas y las mesas no siguen el orden adecuado. el create da error de CORS. La accion deberia ser create no import",
+                "notes": "Se corrigió el fallo de CORS en system/route.ts añadiendo manejo de OPTIONS. Se refactorizó la lógica de etiquetado automático en el frontend para usar contadores independientes por tipo (Filas vs Mesas) y se ajustó la semántica de la API para usar el endpoint de creación de mapas."
+            }
+        },
+        {
+            "input":{
+                "timestamp": "2026-03-04T16:55:00-03:00",
+                "tool/model": "Gemini 3.1 Pro",
+                "purpose": "Corregir bloqueos de CORS en el endpoint de creación y solucionar la reactividad del input de precio mediante actualizaciones inmutables.",
+                "prompt": "Soluciona el error de CORS al intentar de crear un mapa y soluciona el precio ya que no me deja cambiarlo de 0",
+                "notes": "Se integró applyCors en el manejador de POST /api/maps. Se refactorizó el manejo de estado en page.tsx para evitar mutaciones directas en objetos anidados, lo que impedía que React re-renderizara el valor del precio."
+            }   
+        }, 
+        {
+            "input":{
+                "timestamp": "2026-03-04T17:15:45-03:00",
+                "tool/model": "Gemini 3 Flash",
+                "purpose": "Ajuste de la lógica de navegación post-creación para alinear el flujo con la estructura de Seats.io.",
+                "prompt": "El create deberia redirigirme a /maps/[id] no a editor y ahi mostrarme el mapa y la screen de edicion como en seats.io",
+                "notes": "Se actualizó el router.push en el frontend para apuntar a /maps/[id]. Se reiteró la importancia de la convención de nombres en Next.js para solucionar el error 404 detectado previamente en los logs del servidor."
+            }
+        }
+        ,
+        {
+            "input":{
+                "timestamp": "2026-03-04T17:20:00-03:00",
+                "tool/model": "Gemini 3 Flash",
+                "purpose": "Diseño de la página del editor /maps/[id] y componentes visuales reactivos para filas y mesas.",
+                "prompt": "Ahora creame la pagina que ira en maps/[id] siguiendo el estilo de seats.io. Las mesas muestralas como circulos con circulos mas chicos para representar las sillas. Cuanto mas sillas mas grande el circulo de la mesa. Las filas presentalas como filas de esos circulos. Cuando se haga hover sobre la mesa deberas mostrar el identificador de la mesa, cuando se haga hover sobre una silla debera mostrar el precio de esa silla de la mesa. Cuando se haga hover sobre una silla de una fila deberas mostrar: El idetificador de la fila a la que pretenece el asiento, el identificador de asiento y el precio del mismo. Recuerda usar componentes que puedan ser reutilizados",
+                "notes": "Se definieron TableVisual y RowVisual con lógica de dimensionamiento dinámico y hovers informativos. Se estableció la estructura de layout de dos columnas (Canvas + Sidebar)."
+            }
+        },
+        {
+            "input":{
+                "timestamp": "2026-03-04T17:25:30-03:00",
+                "tool/model": "Gemini 3 Flash",
+                "purpose": "Implementación del componente SeatMapCanvas para organizar y renderizar áreas y elementos en el editor.",
+                "prompt": "Ahora prosegui a crear el SeatMapCanvas para organizar las areas",
+                "notes": "Se estructuró el lienzo principal utilizando secciones por área y renderizado condicional de componentes visuales. Se incluyó un placeholder para el escenario siguiendo la referencia visual de Seats.io."
+            }
+        },
+        {
+            "input":{
+                "timestamp": "2026-03-04T17:30:00-03:00",
+                "tool/model": "Gemini 3 Flash",
+                "purpose": "Creación de la Sidebar de edición dinámica y funcionalidad de exportación JSON.",
+                "prompt": "Generame una sidebar que es la que se va a utilizar en page.tsx que permitira edicion dinamica del mapa...",
+                "notes": "Se desarrolló el componente Sidebar.tsx con controles para modificar etiquetas y precios en tiempo real. Se integró una utilidad de descarga de archivos JSON para exportar el estado actual del mapa."
+            }
+        },
+        {
+           "input":{
+                "timestamp": "2026-03-04T17:45:00-03:00",
+                "tool/model": "Gemini 3 Flash",
+                "purpose": "Expansión de la Sidebar para permitir la creación dinámica de Áreas, Filas y Mesas, e implementación de mejoras de UX (cursor pointer).",
+                "prompt": "Ahora requiero poder desde la sidebar agregar areas, mesas, filas y demas... Y hace que cuando se haga hover sobre los botones de guardar y descargar el puntero del mouse parezca una mano",
+                "notes": "Se añadieron métodos para generar IDs únicos y etiquetas correlativas automáticas (Fila A, B... / M1, M2...) al agregar elementos. Se aplicó la clase cursor-pointer a los botones de acción principal."
+            }
+        },
+        {
+            "input":{
+                "timestamp": "2026-03-04T17:31:00-03:00",
+                "tool/model": "Gemini 3 Flash",
+                "purpose": "Reestructuración estética y funcional de la Sidebar con soporte de colores por área y tarjetas anidadas.",
+                "prompt": "Quiero que dentro de la sidebar, cada area sea una tarjeta que ocupe casi todo el ancho de la sidebar y que a cada una se le asigne un color (que se puede guardar). Dentro de cada tarjeta de area quiero dos tarjetas mas chicas para agregar filas y mesas (ambas tomaran el olor del area al que pertenecen). En estas tarjetas de filas y mesas se permitira setear la cantidad de sillas de cada uno y el precio de las mismas",
+                "notes": "Se actualizó la interfaz de Area para soportar colores. Se implementó una jerarquía de Cards de Tailwind con bordes coloreados dinámicamente. Se añadieron validaciones de no-negativos y cursor-pointer en botones de acción."
+            }
+        },
+        {
+            "input":{
+                "timestamp": "2026-03-04T17:39:00-03:00",
+                "tool/model": "Gemini 3 Flash",
+                "purpose": "Estabilización del backend y limpieza visual del canvas.",
+                "prompt": "Quita el cuadrado que dice el area. Haz que las sillas de la mesa no sean rectas sino que sigan la cirumferencia de la mesa y colorea las filas y las mesas con sus sillas del color que selecione para el area [imágenes de errores]",
+                "notes": "Se corrigió el error de unwrapping de params en Next.js 15. Se habilitó soporte de styles en el componente Card. Se eliminó el label de área en el canvas principal."
+            }
         }
         
     ]
