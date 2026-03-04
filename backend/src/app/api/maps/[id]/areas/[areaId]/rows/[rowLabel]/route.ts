@@ -1,36 +1,33 @@
 import { NextResponse } from 'next/server';
-import { tableService } from '@/services/tableService';
+import { rowService } from '@/services/rowService';
 
 interface Props {
   params: {
     id: string;
     areaId: string;
-    tableLabel: string;
+    rowLabel: string;
   };
 }
 
 export async function PUT(request: Request, { params }: Props) {
-  const { id, areaId, tableLabel } = params;
+  const { id, areaId, rowLabel } = params;
 
   try {
     const body = await request.json();
+    
+    const decodedLabel = decodeURIComponent(rowLabel);
 
-    if (body.etiqueta !== undefined && String(body.etiqueta).trim() === '') {
-      return NextResponse.json({ error: 'La etiqueta no puede estar vacía' }, { status: 400 });
-    }
-
-    const decodedLabel = decodeURIComponent(tableLabel);
-    const updatedTable = tableService.updateTable(id, areaId, decodedLabel, body);
-
-    return NextResponse.json(updatedTable);
+    const updatedRow = rowService.updateRow(id, areaId, decodedLabel, body);
+    
+    return NextResponse.json(updatedRow);
 
   } catch (error: any) {
     if (error.message.includes('encontrad')) {
       return NextResponse.json({ error: error.message }, { status: 404 });
     }
     if (
-      error.message.includes('silla') || 
-      error.message.includes('negativ') ||
+      error.message.includes('asiento') || 
+      error.message.includes('negativ') || 
       error.message.includes('límite') ||
       error.message.includes('cantidad')
     ) {
@@ -41,20 +38,21 @@ export async function PUT(request: Request, { params }: Props) {
 }
 
 export async function DELETE(request: Request, { params }: Props) {
-  const { id, areaId, tableLabel } = params;
+  const { id, areaId, rowLabel } = params;
   
-  const decodedLabel = decodeURIComponent(tableLabel);
-  const success = tableService.deleteTable(id, areaId, decodedLabel);
+  const decodedLabel = decodeURIComponent(rowLabel);
+
+  const success = rowService.deleteRow(id, areaId, decodedLabel);
 
   if (!success) {
     return NextResponse.json(
-      { error: 'Mesa, área o mapa no encontrado' },
+      { error: 'Fila, área o mapa no encontrado' },
       { status: 404 }
     );
   }
 
   return NextResponse.json(
-    { message: 'Mesa eliminada correctamente' },
+    { message: 'Fila eliminada correctamente' },
     { status: 200 }
   );
 }

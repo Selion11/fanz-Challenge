@@ -17,12 +17,13 @@ export interface RowElement extends BaseElement {
 
 export interface TableElement extends BaseElement {
   tipo: 'mesa';
-  cantidad_sillas: number;
+  sillas: Seat[];
 }
 
 export type MapElement = RowElement | TableElement;
 
 export interface Area {
+  id?: string;
   nombre_area: string;
   elementos: MapElement[];
 }
@@ -31,10 +32,4 @@ export interface SeatMap {
   id?: string;
   nombre_plano: string;
   areas: Area[];
-}
-
-export interface Area {
-  id?: string;
-  nombre_area: string;
-  elementos: MapElement[];
 }

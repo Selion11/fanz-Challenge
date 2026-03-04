@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { tableService } from '@/services/tableService';
+import { rowService } from '@/services/rowService';
 
 interface Props {
   params: {
@@ -14,33 +14,29 @@ export async function POST(request: Request, { params }: Props) {
   try {
     const body = await request.json();
 
-    if (body.etiqueta !== undefined && String(body.etiqueta).trim() === '') {
-      return NextResponse.json({ error: 'La etiqueta no puede estar vacía' }, { status: 400 });
-    }
-
     const cantidad = body.cantidad ? parseInt(body.cantidad, 10) : 1;
 
-    const newTables = tableService.createMultipleTables(id, areaId, {
+    const newRows = rowService.createMultipleRows(id, areaId, {
       cantidad: cantidad,
-      cantidad_sillas: body.cantidad_sillas,
+      cantidad_asientos: body.cantidad_asientos,
       precio: body.precio
     });
 
     if (cantidad === 1) {
-      return NextResponse.json(newTables[0], { status: 201 });
+      return NextResponse.json(newRows[0], { status: 201 });
     }
 
-    return NextResponse.json(newTables, { status: 201 });
+    return NextResponse.json(newRows, { status: 201 });
 
   } catch (error: any) {
     if (error.message.includes('encontrad')) {
       return NextResponse.json({ error: error.message }, { status: 404 });
     }
     if (
-      error.message.includes('silla') || 
-      error.message.includes('negativ') ||
-      error.message.includes('límite') ||
-      error.message.includes('cantidad')
+      error.message.includes('asiento') || 
+      error.message.includes('límite') || 
+      error.message.includes('cantidad') || 
+      error.message.includes('negativ')
     ) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }

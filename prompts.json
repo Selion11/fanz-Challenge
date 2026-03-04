@@ -1,7 +1,7 @@
 {
     "prompts":[
         {
-            "prompt": {
+            "input": {
                 "timestamp": "2026-03-04T11:50:27-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Confirmar la recepción y aplicación de las directivas de formato",
@@ -10,7 +10,7 @@
             }
         },
         {
-           "prompt":{
+           "input":{
                 "timestamp": "2026-03-04T11:58:05-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Inicializar el entorno de desarrollo con Next.js y TypeScript",
@@ -19,7 +19,7 @@
             } 
         },
         {
-            "prompt":{
+            "input":{
                 "timestamp": "2026-03-04T12:05:10-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Definir y validar la estructura JSON de los datos",
@@ -28,7 +28,7 @@
             }
         },
         {
-            "prompt":{
+            "input":{
                 "timestamp": "2026-03-04T12:15:00-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Actualizar la estructura JSON incorporando el campo de precio",
@@ -37,7 +37,7 @@
             }
         },
         {
-            "prompt":{
+            "input":{
                 "timestamp": "2026-03-04T12:17:01-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Definir las interfaces TypeScript (Modelos)",
@@ -46,7 +46,7 @@
             }
         },
         {
-            "prompt":{
+            "input":{
                 "timestamp": "2026-03-04T12:25:30-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Implementar Service y Controller inicial (GET/POST)",
@@ -55,7 +55,7 @@
             }
         },
         {
-            "prompt":{
+            "input":{
                 "timestamp": "2026-03-04T12:28:45-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Implementar operaciones CRUD restantes (GET by ID, PUT, DELETE)",
@@ -64,7 +64,7 @@
             }
         },
         {
-            "prompt":{
+            "input":{
                 "timestamp": "2026-03-04T12:35:12-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Configurar e implementar Unit Testing con Jest",
@@ -73,7 +73,7 @@
             }
         },
         {
-            "prompt":{
+            "input":{
                 "timestamp": "2026-03-04T12:45:10-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Corregir error TS (falta metodo clear) y agregar caso de prueba para validación en update",
@@ -82,7 +82,7 @@
             }
         },
         {
-            "prompt":{
+            "input":{
                 "timestamp": "2026-03-04T12:43:34-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Configurar script de test en package.json y crear archivo .gitignore",
@@ -91,7 +91,7 @@
             }
         },
         {
-            "prompt":{
+            "input":{
                 "timestamp": "2026-03-04T12:48:55-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Añadir soporte de ID a las áreas y crear los métodos CRUD en el servicio",
@@ -100,7 +100,7 @@
             }
         },
         {
-            "prompt":{
+            "input":{
                 "timestamp": "2026-03-04T12:52:45-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Crear un servicio independiente para Áreas con validaciones estrictas",
@@ -109,7 +109,7 @@
             }
         },
         {
-            "prompt":{
+            "input":{
                 "timestamp": "2026-03-04T12:55:00-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Explicar arquitectura de rutas de Next.js e implementar el POST de áreas",
@@ -118,7 +118,7 @@
             }
         },
         {
-            "prompt":{
+            "input":{
                 "timestamp": "2026-03-04T13:00:25-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Implementar rutas dinámicas para Editar y Borrar Áreas",
@@ -127,7 +127,7 @@
             }
         },
         {
-            "prompt":{
+            "input":{
                 "timestamp": "2026-03-04T13:02:46-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Implementar unit testing para la lógica de áreas",
@@ -136,12 +136,138 @@
             }
         }, 
         {
-            "prompt":{
+            "input":{
                 "timestamp": "2026-03-04T13:05:46-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Crear tests E2E/Integración para las rutas de la API de Áreas y Mapas",
                 "prompt": "Ahora vas a crear e2e testing los test sera: Crear un area en un mapa ya existente | Editar un area dentro de un mapa | Fallar al intentar crear un area sin dentro de un mapa | Borrar un mapa (eso borra todas las areas que estan dentro) | Crear varias areas para un mapa | Eliminar un area de un mapa",
                 "notes": "Se creó un archivo de pruebas de integración para validar los endpoints (Route Handlers) emulando peticiones HTTP reales. Se cubrieron todos los escenarios solicitados validando tanto los códigos de estado HTTP como las respuestas JSON, incluyendo tu petición de copiar el prompt exacto en este log."
+            }
+        },
+        {
+            "input":{
+                "timestamp": "2026-03-04T13:35:10-03:00",
+                "tool/model": "Gemini 3.1 Pro",
+                "purpose": "Implementar la lógica de negocio para Mesas (TableService)",
+                "prompt": "Sigamos con las Mesas, las mesas se deben poder crear y editar (asignandoles una etiqueta automaticamente siguiendo un estilo: M1,M2.....MN). En cada mesa se deben poder asignar una cantidad de asientos como yo desee. No hace falta numerar ni etiquetar estos asientos",
+                "notes": "Se creó `tableService.ts`. Se implementó la función `_generateLabel` para detectar automáticamente el correlativo M{N} basado en las mesas existentes. Se definieron `addTable` (con validación de sillas > 0) y `updateTable`. Se usó la etiqueta como ID de operación."
+            }
+        },
+        {
+            "input":{
+                "timestamp": "2026-03-04T13:35:10-03:00",
+                "tool/model": "Gemini 3.1 Pro",
+                "purpose": "Implementar la lógica de negocio para Mesas (TableService)",
+                "prompt": "Sigamos con las Mesas, las mesas se deben poder crear y editar (asignandoles una etiqueta automaticamente siguiendo un estilo: M1,M2.....MN). En cada mesa se deben poder asignar una cantidad de asientos como yo desee. No hace falta numerar ni etiquetar estos asientos",
+                "notes": "Se creó `tableService.ts`. Se implementó la función `_generateLabel` para detectar automáticamente el correlativo M{N} basado en las mesas existentes. Se definieron `addTable` (con validación de sillas > 0) y `updateTable`. Se usó la etiqueta como ID de operación."
+            }
+        },
+        {
+            "input":{
+                "timestamp": "2026-03-04T13:38:00-03:00",
+                "tool/model": "Gemini 3.1 Pro",
+                "purpose": "Actualizar tableService para permitir cambio de nombre y crear tests unitarios de mesas",
+                "prompt": "Ahora realiza los tests unitarios para las mesas los tests deben ser: Crear una mesa | Editar una mesa cambiandole el nombre | Editar una mesa editando la cantidad de sillas | Eliminar una mesa",
+                "notes": "Se modificó updateTable para permitir la edición del campo etiqueta. Se implementaron los tests unitarios utilizando seatMapService y areaService en el beforeEach para preparar el entorno de pruebas, respetando el paso a paso."
+            }
+        },
+        {
+            "input":{
+                "timestamp": "2026-03-04T13:40:53-03:00",
+                "tool/model": "Gemini 3.1 Pro",
+                "purpose": "Crear tests E2E para la lógica de Mesas adoptando un enfoque TDD",
+                "prompt": "Crea e2e testing que: Cree un mapa, un area y una mesa en ese area | Edite una mesa ya creada | Falle en la edicion de una mesa por dejarla sin nombre | Falle en la creacion de una mesa en un area por tratar de crearla sin nombre | Elimine una mesa en un area | Elimine un area y todas las mesas dentro de ella",
+                "notes": "Se redactaron los tests de integración (E2E) emulando peticiones HTTP. Dado que los controladores (rutas) de mesas aún no existen, se le aclara al usuario que habrá errores de importación temporalmente. Se adaptó el test de 'falla en creación sin nombre' forzando un string vacío y sillas inválidas, ya que por defecto el nombre se autogenera."
+            }
+        },
+        {
+            "input":{
+                "timestamp": "2026-03-04T13:46:10-03:00",
+                "tool/model": "Gemini 3.1 Pro",
+                "purpose": "Crear los controladores (Route Handlers) para la lógica de Mesas",
+                "prompt": "Crea las rutas manteniendo los comandos CRUD para el service de las mesas",
+                "notes": "Se crearon las rutas anidadas en Next.js App Router para manejar el POST (crear) en la colección de mesas y PUT/DELETE (editar/eliminar) para mesas individuales, incorporando el manejo de errores necesario para satisfacer los tests E2E escritos previamente."
+            }
+        },
+        {
+            "input":{
+                "timestamp": "2026-03-04T14:24:15-03:00",
+                "tool/model": "Gemini 3.1 Pro",
+                "purpose": "Implementar la lógica de negocio para Filas (rowService) con redistribución automática de etiquetas",
+                "prompt": "Avanzemos con los servicios para las filas. Las filas funcionara mas o menos como las mesas. Cada una tendra un identificador que sera {nombre del area + numero}. Con asientos dentro de cada fila con su propio identificador que sera un numero del 1 en adelante. Cuando se crea una fila se debe especificar el numero de asientos que tiene la misma. Debe haber error si: Se crea una fila sin asientos. Si a una fila se la edita para tener 0 asientos la misma se elimina y se redistribuyen los identificadores de fila.",
+                "notes": "Se creó el rowService implementando la generación de etiquetas basadas en el nombre del área, la generación de asientos numéricos y la lógica de eliminación/redistribución automática cuando una fila pasa a tener 0 asientos, o cuando se elimina explícitamente."
+            }
+        },
+        {
+            "input":{
+                "timestamp": "2026-03-04T14:28:00-03:00",
+                "tool/model": "Gemini 3.1 Pro",
+                "purpose": "Añadir límite máximo de 20 asientos y crear pruebas unitarias para el servicio de filas",
+                "prompt": "Crea el unit testing para el servicio de filas. Los tests deben incluir: Crear una fila | Editar una fila para tener mas sillas | Crear una fila para tener menos sillas | Eliminar una fila | Eliminar una fila editandola para que tenga 0 asientos | Tratar de asignarle mas de 20 asientos a una fila y que falle ya que el maximo de asientos que debe poder tener una fila es 20",
+                "notes": "Se indicó la necesidad de actualizar primero el rowService para incluir la nueva regla de negocio (máximo 20 asientos) antes de ejecutar los tests. Se proveyeron los tests unitarios cubriendo la lógica de redistribución de nombres y el límite de asientos."
+            }
+        },
+        {
+            "input":{
+                "timestamp": "2026-03-04T14:38:00-03:00",
+                "tool/model": "Gemini 3.1 Pro",
+                "purpose": "Añadir tests E2E para filas y actualizar los de mesas con las nuevas reglas de negocio (TDD)",
+                "prompt": "Ahora creame el E2E testing para las filas. Estos tests se compondran de: Crear una fila en un area que tiene mesas | Editar una fila en un area con mesas | Eliminar una fila (de varias) en un area y ver que se renombre de manera correcta | Eliminar una fila editandola para que tenga 0 asientos | Crear un mapa, un area y agregarle mesas y filas | Tratar de crear una fila en un area con asientos negativos | Intentar crear una fila con mas de 20 asientos | Tratar de asignarle mas de 15 filas a un area y que falle ya que 15 debe ser el maximo | Tratar de asginar filas negativas y que falle.\n\nAl E2E de mesas agregar: Tratar de agregar mesas negativas y que falle | Tratar de agregar mas de 20 mesas y que falle",
+                "notes": "Se escribieron las suites de pruebas solicitadas, interpretando 'mesas/filas negativas' como el intento de crearlas enviando valores negativos en la cantidad de sus componentes (sillas/asientos). Se le advierte al usuario que los tests fallarán debido al enfoque TDD hasta que se actualicen los servicios con los nuevos límites."
+            }
+        },
+        {
+            "input":{
+                "timestamp": "2026-03-04T14:38:14-03:00",
+                "tool/model": "Gemini 3.1 Pro",
+                "purpose": "Actualizar servicios con los límites máximos de filas y mesas",
+                "prompt": "Actualizame los servicios de table service y row service para cumplir con los limites.",
+                "notes": "Se agregaron las validaciones para bloquear la creación si se superan las 20 mesas o las 15 filas. Se enviaron los archivos completos para evitar errores de copia. Se adaptó la respuesta para ir estrictamente paso a paso según las preferencias del usuario."
+            }
+        },
+        {
+            "input":{
+                "timestamp": "2026-03-04T15:05:00-03:00",
+                "tool/model": "Gemini 3.1 Pro",
+                "purpose": "Implementar creación y eliminación masiva en servicios y tests",
+                "prompt": "Agrega la opcion de crear y eliminar multiples filas y mesas a la ves y luego agrega eso a los unit test y los e2e test antes de seguir con el router de filas.",
+                "notes": "Se actualizaron tableService.ts y rowService.ts añadiendo métodos para operaciones en lote (createMultiple.../deleteMultiple...). Se actualizaron los tests unitarios correspondientes. Se agregaron casos de prueba E2E anticipando la funcionalidad en la API. Se advirtió que los tests E2E de batch fallarán hasta actualizar los controladores."
+            }
+        },
+        {
+            "input":{
+                "timestamp": "2026-03-04T15:15:30-03:00",
+                "tool/model": "Gemini 3.1 Pro",
+                "purpose": "Añadir auto-eliminación por 0 sillas y redistribución secuencial de etiquetas para mesas",
+                "prompt": "Agrega la logica de eliminar una mesa si se la edita para tener 0 sillas y el renombramiento de las mismas",
+                "notes": "Se modificó tableService.ts implementando '_recalculateTableLabels' para replicar el comportamiento de las filas. Se actualizó la lógica de 'updateTable', 'addTable' y borrado masivo para disparar esta redistribución. Se proveyeron los tests unitarios correspondientes, advirtiendo sobre el casteo necesario para TypeScript en tests previos."
+            }
+        },
+        {
+            "input":{
+                "timestamp": "2026-03-04T15:25:00-03:00",
+                "tool/model": "Gemini 3.1 Pro",
+                "purpose": "Crear los controladores (Route Handlers) para la lógica de Filas",
+                "prompt": "Crea el route.ts de las filas",
+                "notes": "Se crearon las rutas de colección (POST para creación simple/múltiple) y de elemento específico (PUT/DELETE) para filas. Se incluyó explícitamente el uso de `decodeURIComponent` para lidiar con los espacios en las etiquetas de filas ('Área N') que Next.js recibe codificadas en los params de la URL."
+            }
+        },
+        {
+            "input":{
+                "timestamp": "2026-03-04T15:01:49-03:00",
+                "tool/model": "Gemini 3.1 Pro",
+                "purpose": "Validar el backend actual contra los requerimientos del PDF de la prueba técnica",
+                "prompt": "Valida que todos los requisitos del backend que pide la consigna esten cumplidos",
+                "notes": "Se analizó el documento PDF provisto. Se detectó que se cumple con la memoria en estado, bulk creation y auto-etiquetado. Se identificaron dos faltantes críticos: el etiquetado individual de los asientos por mesa (actualmente solo es un número entero) y los endpoints específicos para importar un JSON completo y resetear el estado general del sistema."
+            }
+        },
+        {
+            "input":{
+                "timestamp": "2026-03-04T15:15:20-03:00",
+                "tool/model": "Gemini 3.1 Pro",
+                "purpose": "Actualizar los tests unitarios y E2E para soportar el etiquetado individual de sillas y precios no negativos",
+                "prompt": "Ahora arregla todas las rutas y tests para refeljar el cambio de poder modificar y etiquetar las sillas de las mesas",
+                "notes": "Se actualizaron las aserciones en tableService.test.ts y tables.e2e.test.ts, reemplazando las comprobaciones de la propiedad 'cantidad_sillas' por la longitud del nuevo array 'sillas'. Se incluyeron los nuevos tests para validar los precios negativos y se proveyó la instrucción de modificar los controladores HTTP para capturar genéricamente el string 'negativ'."
             }
         }
         
