@@ -269,6 +269,33 @@
                 "prompt": "Ahora arregla todas las rutas y tests para refeljar el cambio de poder modificar y etiquetar las sillas de las mesas",
                 "notes": "Se actualizaron las aserciones en tableService.test.ts y tables.e2e.test.ts, reemplazando las comprobaciones de la propiedad 'cantidad_sillas' por la longitud del nuevo array 'sillas'. Se incluyeron los nuevos tests para validar los precios negativos y se proveyó la instrucción de modificar los controladores HTTP para capturar genéricamente el string 'negativ'."
             }
+        },
+        {
+            "input":{
+                "timestamp": "2026-03-04T15:25:10-03:00",
+                "tool/model": "Gemini 3.1 Pro",
+                "purpose": "Implementar funcionalidades de Reset, Importar y Exportar requeridas por la consigna",
+                "prompt": "Implementa las funciones de RESET (nuevo mapa), Importar un mapa desde el .json y exportar el mapa actual a un .json",
+                "notes": "Se extendió seatMapService con el método importMap. Se creó un nuevo endpoint centralizado en /api/maps/system para manejar acciones globales (reset e import). Se confirmó que el GET existente cumple la función de exportación al devolver la estructura anidada completa. Se incluyeron pruebas E2E para validar el flujo completo de sesión vacía."
+            }
+        },
+        {
+            "input":{
+                "timestamp": "2026-03-04T15:26:00-03:00",
+                "tool/model": "Gemini 3.1 Pro",
+                "purpose": "Generar el archivo README.md final integrando las tecnologías, instrucciones de test y justificaciones de diseño (Teatro Colón).",
+                "prompt": "Crea un readme con las tecnologias utilizadas para el backend, como correr los tests y las desiciones tomadas. Donde los limites superiores de cantidades fueron hechos tomando en cuenta la informacion del teatro colon.",
+                "notes": "Se redactó el README cumpliendo con todos los puntos de la sección 'Entregables' del PDF. Se incluyó la justificación de los límites basada en el Teatro Colón solicitada por el usuario y se estructuró la información de manera profesional para facilitar la evaluación de la prueba técnica."
+            }
+        },
+        {
+            "input":{
+                "timestamp": "2026-03-04T15:27:30-03:00",
+                "tool/model": "Gemini 3.1 Pro",
+                "purpose": "Consolidar el route.ts principal con soporte CORS y detallar la documentación de rutas en el README",
+                "prompt": "Agregale el detalle de las rutas y dame el route.ts general solucionado para evitar problemas de CORS",
+                "notes": "Se implementó un middleware de CORS manual dentro de los Route Handlers para asegurar interoperabilidad con el frontend. Se expandió el README con el catálogo de endpoints para cumplir con la documentación técnica solicitada en la consigna."
+            }
         }
         
     ]

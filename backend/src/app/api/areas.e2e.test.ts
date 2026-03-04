@@ -1,4 +1,4 @@
-import { POST as createMap } from '@/app/api/maps/route';
+import { POST as createMap } from '@/app/api/route';
 import { GET as getMap, DELETE as deleteMap } from '@/app/api/maps/[id]/route';
 import { POST as createArea } from '@/app/api/maps/[id]/areas/route';
 import { PUT as editArea, DELETE as deleteArea } from '@/app/api/maps/[id]/areas/[areaId]/route';

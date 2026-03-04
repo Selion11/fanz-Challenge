@@ -1,10 +1,16 @@
 import { SeatMap } from '@/model/types';
+import { randomUUID } from 'crypto';
 
 let maps: SeatMap[] = [];
 
 export const seatMapService = {
+
   getAll: (): SeatMap[] => {
     return maps;
+  },
+
+  getById: (id: string): SeatMap | undefined => {
+    return maps.find(m => m.id === id);
   },
 
   create: (data: Partial<SeatMap>): SeatMap => {
@@ -13,29 +19,27 @@ export const seatMapService = {
     }
 
     const newMap: SeatMap = {
-      id: crypto.randomUUID(),
-      nombre_plano: data.nombre_plano || 'Nuevo Mapa',
+      id: randomUUID(),
+      nombre_plano: data.nombre_plano,
       areas: data.areas || [], 
     };
     maps.push(newMap);
     return newMap;
   },
 
-  getById: (id: string): SeatMap | undefined => {
-    return maps.find(m => m.id === id);
-  },
 
   update: (id: string, data: SeatMap): SeatMap | null => {
-
     if (!data.nombre_plano) {
       throw new Error('El nombre del plano es obligatorio');
     }
 
     const index = maps.findIndex(m => m.id === id);
     if (index === -1) return null;
+    
     maps[index] = { ...data, id }; 
     return maps[index];
   },
+
 
   delete: (id: string): boolean => {
     const initialLength = maps.length;
@@ -43,7 +47,22 @@ export const seatMapService = {
     return maps.length !== initialLength;
   },
 
-  clear: () => {
+
+  importMap: (fullMap: SeatMap): SeatMap => {
+    if (!fullMap.nombre_plano || !Array.isArray(fullMap.areas)) {
+      throw new Error('Estructura de mapa inválida');
+    }
+    
+    const newMap: SeatMap = {
+      ...fullMap,
+      id: fullMap.id || randomUUID() 
+    };
+    
+    maps.push(newMap);
+    return newMap;
+  },
+
+  clear: (): void => {
     maps = [];
   }
 };
