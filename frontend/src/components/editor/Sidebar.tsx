@@ -13,10 +13,11 @@ interface SidebarProps {
 interface ElementCardProps {
   element: MapElement;
   areaColor: string;
+  maxSeats: number;
   onUpdate: (updates: any) => void;
 }
 
-const ElementCard = ({ element, areaColor, onUpdate }: ElementCardProps) => {
+const ElementCard = ({ element, areaColor, maxSeats, onUpdate }: ElementCardProps) => {
   const quantity = element.tipo === 'fila' ? element.asientos?.length : element.sillas?.length;
 
   return (
@@ -32,10 +33,11 @@ const ElementCard = ({ element, areaColor, onUpdate }: ElementCardProps) => {
       
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1">
-          <label className="text-[8px] font-bold text-gray-500 uppercase">Sillas/Asientos</label>
+          <label className="text-[8px] font-bold text-gray-500 uppercase">Cant. (Máx {maxSeats})</label>
           <input 
             type="number" 
             min="0" 
+            max={maxSeats}
             className="w-full bg-white border border-gray-200 rounded p-1 text-xs outline-none focus:ring-1"
             style={{ outlineColor: areaColor }}
             value={quantity}
@@ -62,6 +64,26 @@ const ElementCard = ({ element, areaColor, onUpdate }: ElementCardProps) => {
 };
 
 export const Sidebar = ({ map, onUpdateMap }: SidebarProps) => {
+  const [isSaving, setIsSaving] = React.useState(false);
+
+  const LIMITS = {
+    fila: 20,
+    mesa: 15,
+    areas: 20,
+    elementsPerArea: 50
+  };
+
+  const reindexElements = (elements: MapElement[]): MapElement[] => {
+    let rowCount = 0;
+    let tableCount = 0;
+    return elements.map((el) => {
+      if (el.tipo === 'fila') {
+        return { ...el, etiqueta: `Fila ${String.fromCharCode(65 + rowCount++)}` };
+      } else {
+        return { ...el, etiqueta: `M${++tableCount}` };
+      }
+    });
+  };
 
   const handleDownloadJSON = () => {
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(map, null, 2));
@@ -72,15 +94,12 @@ export const Sidebar = ({ map, onUpdateMap }: SidebarProps) => {
     downloadAnchorNode.click();
     downloadAnchorNode.remove();
   };
-
-  const [isSaving, setIsSaving] = React.useState(false);
   
   const handleSave = async () => {
     if (!map.id) {
       alert('Error: No se pudo encontrar el identificador del mapa.');
       return;
     }
-
     setIsSaving(true);
     try {
       await apiService.updateMap(map.id, map);
@@ -99,41 +118,51 @@ export const Sidebar = ({ map, onUpdateMap }: SidebarProps) => {
     });
   };
 
+  const addArea = () => {
+    if (map.areas.length >= LIMITS.areas) return alert(`Límite de ${LIMITS.areas} áreas alcanzado`);
+    onUpdateMap({
+      ...map,
+      areas: [...map.areas, { id: crypto.randomUUID(), nombre_area: `Nueva Área ${map.areas.length + 1}`, elementos: [], color: '#000000' }]
+    });
+  };
+
   const addElement = (areaId: string, tipo: 'fila' | 'mesa') => {
     const area = map.areas.find(a => a.id === areaId);
-    if (!area) return;
+    if (!area || area.elementos.length >= LIMITS.elementsPerArea) return alert("Límite de elementos alcanzado");
 
-    const count = area.elementos.filter(el => el.tipo === tipo).length;
     const newElement: MapElement = tipo === 'fila' 
-      ? { tipo: 'fila', etiqueta: `Fila ${String.fromCharCode(65 + count)}`, precio: 0, asientos: [] }
-      : { tipo: 'mesa', etiqueta: `M${count + 1}`, precio: 0, sillas: [] };
+      ? { tipo: 'fila', etiqueta: '', precio: 0, asientos: [{ identificador: '1' }] }
+      : { tipo: 'mesa', etiqueta: '', precio: 0, sillas: [{ identificador: '1' }] };
 
     onUpdateMap({
       ...map,
-      areas: map.areas.map(a => a.id === areaId ? { ...a, elementos: [...a.elementos, newElement] } : a)
+      areas: map.areas.map(a => a.id === areaId ? { ...a, elementos: reindexElements([...a.elementos, newElement]) } : a)
     });
   };
 
   const updateElement = (areaId: string, elementIdx: number, updates: any) => {
     onUpdateMap({
       ...map,
-      areas: map.areas.map(a => a.id === areaId ? {
-        ...a,
-        elementos: a.elementos.map((el, i) => {
-          if (i !== elementIdx) return el;
-          const updated = { ...el, ...updates };
-          
-          if (updates.cantidad !== undefined) {
-            const val = Math.max(0, updates.cantidad);
-            if (el.tipo === 'fila') {
-              updated.asientos = Array(val).fill(null).map((_, idx) => ({ identificador: `${idx + 1}` }));
-            } else {
-              updated.sillas = Array(val).fill(null).map((_, idx) => ({ identificador: `${idx + 1}` }));
-            }
+      areas: map.areas.map(a => {
+        if (a.id !== areaId) return a;
+        let newElems = [...a.elementos];
+        const target = newElems[elementIdx];
+
+        if (updates.cantidad !== undefined) {
+          if (updates.cantidad <= 0) {
+            newElems.splice(elementIdx, 1);
+          } else {
+            const capped = Math.min(updates.cantidad, LIMITS[target.tipo]);
+            const updated = { ...target, ...updates };
+            const seats = Array.from({ length: capped }, (_, i) => ({ identificador: `${i + 1}` }));
+            target.tipo === 'fila' ? updated.asientos = seats : updated.sillas = seats;
+            newElems[elementIdx] = updated as MapElement;
           }
-          return updated as MapElement;
-        })
-      } : a)
+        } else {
+          newElems[elementIdx] = { ...target, ...updates } as MapElement;
+        }
+        return { ...a, elementos: reindexElements(newElems) };
+      })
     });
   };
 
@@ -143,17 +172,7 @@ export const Sidebar = ({ map, onUpdateMap }: SidebarProps) => {
         <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
           <MapPin size={12} /> {map.nombre_plano || 'Sin nombre'}
         </h3>
-        <Button 
-          variant="secondary" 
-          className="w-full justify-center h-9 text-xs cursor-pointer"
-          onClick={() => {
-            const newId = crypto.randomUUID();
-            onUpdateMap({
-              ...map,
-              areas: [...map.areas, { id: newId, nombre_area: 'Nueva Área', elementos: [], color: '#000000' }]
-            });
-          }}
-        >
+        <Button variant="secondary" className="w-full justify-center h-9 text-xs cursor-pointer" onClick={addArea}>
           <Plus size={14} className="mr-2" /> Añadir Área
         </Button>
       </div>
@@ -162,45 +181,19 @@ export const Sidebar = ({ map, onUpdateMap }: SidebarProps) => {
         {map.areas.map((area) => (
           <Card key={area.id} className="w-[96%] mx-auto p-4 bg-white shadow-sm border-t-4" style={{ borderTopColor: area.color || '#000' }}>
             <div className="flex items-center justify-between mb-4">
-              <input 
-                className="font-bold text-sm bg-transparent outline-none border-b border-transparent focus:border-gray-200 w-1/2"
-                value={area.nombre_area}
-                onChange={(e) => updateArea(area.id, { nombre_area: e.target.value })}
-              />
+              <input className="font-bold text-sm bg-transparent outline-none border-b border-transparent focus:border-gray-200 w-1/2" value={area.nombre_area} onChange={(e) => updateArea(area.id, { nombre_area: e.target.value })} />
               <div className="flex items-center gap-2">
                 <Palette size={14} className="text-gray-400" />
-                <input 
-                  type="color" 
-                  className="w-6 h-6 p-0 border-none cursor-pointer bg-transparent"
-                  value={area.color || '#000000'}
-                  onChange={(e) => updateArea(area.id, { color: e.target.value })}
-                />
+                <input type="color" className="w-6 h-6 p-0 border-none cursor-pointer bg-transparent" value={area.color || '#000000'} onChange={(e) => updateArea(area.id, { color: e.target.value })} />
               </div>
             </div>
-
             <div className="grid grid-cols-2 gap-2 mb-4">
-              <button 
-                onClick={() => addElement(area.id, 'fila')}
-                className="flex items-center justify-center gap-2 p-2 rounded-lg border border-dashed border-gray-300 text-[10px] font-bold hover:bg-gray-50 cursor-pointer transition-colors"
-              >
-                <Plus size={12} /> <Armchair size={12} /> FILA
-              </button>
-              <button 
-                onClick={() => addElement(area.id, 'mesa')}
-                className="flex items-center justify-center gap-2 p-2 rounded-lg border border-dashed border-gray-300 text-[10px] font-bold hover:bg-gray-50 cursor-pointer transition-colors"
-              >
-                <Plus size={12} /> <Coffee size={12} /> MESA
-              </button>
+              <button onClick={() => addElement(area.id, 'fila')} className="flex items-center justify-center gap-2 p-2 rounded-lg border border-dashed border-gray-300 text-[10px] font-bold hover:bg-gray-50 cursor-pointer"><Plus size={12} /><Armchair size={12} /> FILA</button>
+              <button onClick={() => addElement(area.id, 'mesa')} className="flex items-center justify-center gap-2 p-2 rounded-lg border border-dashed border-gray-300 text-[10px] font-bold hover:bg-gray-50 cursor-pointer"><Plus size={12} /><Coffee size={12} /> MESA</button>
             </div>
-
             <div className="space-y-3">
               {area.elementos.map((el, idx) => (
-                <ElementCard 
-                  key={idx}
-                  element={el}
-                  areaColor={area.color || '#000'}
-                  onUpdate={(updates) => updateElement(area.id, idx, updates)}
-                />
+                <ElementCard key={idx} element={el} areaColor={area.color || '#000'} maxSeats={LIMITS[el.tipo]} onUpdate={(u) => updateElement(area.id, idx, u)} />
               ))}
             </div>
           </Card>
@@ -208,18 +201,10 @@ export const Sidebar = ({ map, onUpdateMap }: SidebarProps) => {
       </div>
 
       <div className="p-4 bg-white border-t border-gray-100 space-y-2">
-        <Button 
-          variant="secondary" 
-          className="w-full justify-center text-xs font-bold cursor-pointer transition-transform active:scale-95"
-          onClick={handleDownloadJSON}
-        >
+        <Button variant="secondary" className="w-full justify-center text-xs font-bold cursor-pointer transition-transform active:scale-95" onClick={handleDownloadJSON}>
           <Download size={14} className="mr-2" /> EXPORTAR JSON
         </Button>
-        <Button 
-          className="w-full justify-center shadow-lg shadow-black/5 active:scale-95 cursor-pointer"
-          onClick={handleSave}
-          isLoading={isSaving}
-        >
+        <Button className="w-full justify-center text-xs font-bold cursor-pointer shadow-lg active:scale-95" onClick={handleSave} isLoading={isSaving}>
           <Save size={14} className="mr-2" /> GUARDAR EN SERVIDOR
         </Button>
       </div>

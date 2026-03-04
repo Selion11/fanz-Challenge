@@ -441,6 +441,24 @@
                 "prompt": "Quita el cuadrado que dice el area. Haz que las sillas de la mesa no sean rectas sino que sigan la cirumferencia de la mesa y colorea las filas y las mesas con sus sillas del color que selecione para el area [imágenes de errores]",
                 "notes": "Se corrigió el error de unwrapping de params en Next.js 15. Se habilitó soporte de styles en el componente Card. Se eliminó el label de área en el canvas principal."
             }
+        },
+        {
+            "input":{
+                "timestamp": "2026-03-04T18:00:21-03:00",
+                "tool/model": "Gemini 3 Flash",
+                "purpose": "Implementación de límites de capacidad y lógica de eliminación por cantidad cero en la Sidebar.",
+                "prompt": "Recorda implementar los limites de cantidad de filas, mesas y asientos que corresponden en cada una. Acordate tambien de que editar una fila o mesa para tener 0 sillas/asientos las elimina",
+                "notes": "Se definieron constantes para límites máximos (Áreas, Elementos, Asientos). Se modificó updateElement para filtrar elementos con cantidad 0 y addElement para validar topes estructurales."
+            }
+        },
+        {
+            "input":{
+                "timestamp": "2026-03-04T18:13:00-03:00",
+                "tool/model": "Gemini 3 Flash",
+                "purpose": "Refactorización de la arquitectura de navegación y carga mediante la extracción de Navbar.tsx.",
+                "prompt": "Utiliza la navbar que esta en la homepage como un componente aparte.",
+                "notes": "Se centralizó la lógica de FileReader y apiService.importMap en el Navbar. Se habilitó el redireccionamiento a Home al hacer click en el logo."
+            }
         }
         
     ]
