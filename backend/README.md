@@ -57,3 +57,6 @@ Los tests validan la creación de múltiples filas , validaciones de etiquetas o
 ### 🛠️ Setup e Instalación
 * Instalar dependencias: npm install
 * Correr en modo desarrollo: npm run dev
+
+### Registro de Prompts (IA)
+Se adjunta el archivo prompts.json detallando decisiones técnicas, esquemas de datos y supuestos asumidos durante el desarrollo.
