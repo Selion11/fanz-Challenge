@@ -32,3 +32,9 @@ export interface SeatMap {
   nombre_plano: string;
   areas: Area[];
 }
+
+export interface Area {
+  id?: string;
+  nombre_area: string;
+  elementos: MapElement[];
+}

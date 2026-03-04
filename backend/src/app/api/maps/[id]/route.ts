@@ -7,6 +7,7 @@ interface Props {
   };
 }
 
+
 export async function GET(request: Request, { params }: Props) {
   const { id } = params;
   const map = seatMapService.getById(id);
