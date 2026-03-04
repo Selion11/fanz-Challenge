@@ -17,26 +17,29 @@ export const SeatMapCanvas = ({ map }: SeatMapCanvasProps) => {
       </div>
 
       <div className="space-y-24">
-        <div className="mt-32 border-2 border-dashed border-gray-200 rounded-2xl p-6 text-center bg-gray-50/30">
+        {/* Escenario en la parte superior del mapa */}
+        <div className="mt-8 border-2 border-dashed border-gray-200 rounded-2xl p-6 text-center bg-gray-50/30">
           <span className="text-sm font-black text-gray-300 uppercase tracking-[0.7em]">
             ESCENARIO / STAGE
           </span>
         </div>
+
         {map.areas.map((area: Area) => (
           <section key={area.id} className="relative pt-8 border-t border-gray-50">
-            
             <div className="flex flex-wrap justify-center items-center gap-16 mt-8">
               {area.elementos.map((elemento, index) => (
                 <div key={index} className="flex-shrink-0">
                   {elemento.tipo === 'fila' ? (
                     <RowVisual 
                       element={elemento} 
-                      color={area.color || '#000000'} 
+                      color={area.color || '#000000'}
+                      areaName={area.nombre_area} // Inyectamos el nombre del área
                     />
                   ) : (
                     <TableVisual 
                       element={elemento} 
-                      color={area.color || '#000000'} 
+                      color={area.color || '#000000'}
+                      areaName={area.nombre_area} // Inyectamos el nombre del área
                     />
                   )}
                 </div>
@@ -45,8 +48,6 @@ export const SeatMapCanvas = ({ map }: SeatMapCanvasProps) => {
           </section>
         ))}
       </div>
-
-
     </div>
   );
 };

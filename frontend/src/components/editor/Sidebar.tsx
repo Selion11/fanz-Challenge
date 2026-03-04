@@ -1,5 +1,5 @@
 import React from 'react';
-import { Download, MapPin, DollarSign, Save, Plus, Armchair, Coffee, Palette } from 'lucide-react';
+import { Download, MapPin, DollarSign, Save, Plus, Armchair, Coffee, Palette, Trash2 } from 'lucide-react';
 import { SeatMap, Area, MapElement } from '@/types/map';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -118,6 +118,15 @@ export const Sidebar = ({ map, onUpdateMap }: SidebarProps) => {
     });
   };
 
+  const removeArea = (areaId: string) => {
+    if (confirm('¿Estás seguro de que querés eliminar esta área y todos sus elementos?')) {
+      onUpdateMap({
+        ...map,
+        areas: map.areas.filter(a => a.id !== areaId)
+      });
+    }
+  };
+
   const addArea = () => {
     if (map.areas.length >= LIMITS.areas) return alert(`Límite de ${LIMITS.areas} áreas alcanzado`);
     onUpdateMap({
@@ -183,6 +192,14 @@ export const Sidebar = ({ map, onUpdateMap }: SidebarProps) => {
             <div className="flex items-center justify-between mb-4">
               <input className="font-bold text-sm bg-transparent outline-none border-b border-transparent focus:border-gray-200 w-1/2" value={area.nombre_area} onChange={(e) => updateArea(area.id, { nombre_area: e.target.value })} />
               <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => removeArea(area.id)}
+                  className="p-1 hover:bg-red-50 text-gray-400 hover:text-red-500 rounded transition-colors cursor-pointer"
+                  title="Eliminar Área"
+                >
+                  <Trash2 size={14} />
+                </button>
+                <div className="w-px h-4 bg-gray-200 mx-1" />
                 <Palette size={14} className="text-gray-400" />
                 <input type="color" className="w-6 h-6 p-0 border-none cursor-pointer bg-transparent" value={area.color || '#000000'} onChange={(e) => updateArea(area.id, { color: e.target.value })} />
               </div>

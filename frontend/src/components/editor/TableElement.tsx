@@ -3,9 +3,10 @@ import { TableElement as TableType } from '@/types/map';
 interface TableVisualProps {
   element: TableType;
   color: string;
+  areaName: string;
 }
 
-export const TableVisual = ({ element, color }: TableVisualProps) => {
+export const TableVisual = ({ element, color, areaName }: TableVisualProps) => {
   const sillaCount = element.sillas?.length || 0;
   const tableRadius = 30 + (sillaCount * 2);
   const chairDistance = tableRadius + 12;
@@ -15,6 +16,7 @@ export const TableVisual = ({ element, color }: TableVisualProps) => {
       className="relative flex items-center justify-center group" 
       style={{ width: chairDistance * 2.5, height: chairDistance * 2.5 }}
     >
+      {/* Centro de la mesa */}
       <div 
         style={{ 
           width: tableRadius * 2, 
@@ -23,11 +25,12 @@ export const TableVisual = ({ element, color }: TableVisualProps) => {
           color: color
         }}
         className="absolute bg-white border-2 rounded-full flex items-center justify-center shadow-sm z-10 transition-transform group-hover:scale-105"
-        title={`Mesa: ${element.etiqueta}`}
+        title={`Área: ${areaName}\nMesa: ${element.etiqueta}`}
       >
         <span className="text-[10px] font-black">{element.etiqueta}</span>
       </div>
 
+      {/* Sillas distribuidas radialmente */}
       {element.sillas?.map((silla, idx) => {
         const angle = (idx * 2 * Math.PI) / sillaCount - Math.PI / 2;
         const x = Math.cos(angle) * chairDistance;
@@ -44,7 +47,8 @@ export const TableVisual = ({ element, color }: TableVisualProps) => {
             }}
             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = color}
             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'white'}
-            title={`Precio: $${element.precio}`}
+            // Tooltip con información contextual completa
+            title={`Área: ${areaName}\nMesa: ${element.etiqueta}\nSilla: ${idx + 1}\nPrecio: $${element.precio}`}
           />
         );
       })}

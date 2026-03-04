@@ -3,9 +3,10 @@ import { RowElement as RowType } from '@/types/map';
 interface RowVisualProps {
   element: RowType;
   color: string;
+  areaName: string;
 }
 
-export const RowVisual = ({ element, color }: RowVisualProps) => {
+export const RowVisual = ({ element, color, areaName }: RowVisualProps) => {
   return (
     <div className="flex flex-col gap-2 p-2 rounded-lg group">
       <div className="flex items-center gap-4">
@@ -32,7 +33,8 @@ export const RowVisual = ({ element, color }: RowVisualProps) => {
                 e.currentTarget.style.backgroundColor = 'transparent';
                 e.currentTarget.style.color = 'inherit';
               }}
-              title={`Fila: ${element.etiqueta}\nAsiento: ${asiento.identificador || idx + 1}\nPrecio: $${element.precio}`}
+              // Tooltip con información contextual completa
+              title={`Área: ${areaName}\nFila: ${element.etiqueta}\nAsiento: ${asiento.identificador || idx + 1}\nPrecio: $${element.precio}`}
             >
               <span className="text-[8px] font-bold">{asiento.identificador || idx + 1}</span>
             </div>
