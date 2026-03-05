@@ -68,27 +68,6 @@ const ElementCard = ({ element, areaColor, maxSeats, isSelected, onUpdate, onSel
           </div>
         </div>
       </div>
-
-      {element.tipo === 'fila' && (
-        <div className="grid grid-cols-2 gap-3 pt-2 border-t border-gray-100" onClick={(e) => e.stopPropagation()}>
-          <div className="space-y-1">
-            <label className="text-[8px] font-bold text-gray-500 uppercase">Rotación ({element.rotacion || 0}°)</label>
-            <input 
-              type="range" min="0" max="360" step="5" className="w-full accent-black cursor-pointer"
-              value={element.rotacion || 0}
-              onChange={(e) => onUpdate({ rotacion: parseInt(e.target.value) })}
-            />
-          </div>
-          <div className="space-y-1">
-            <label className="text-[8px] font-bold text-gray-500 uppercase">Curvatura ({element.curvatura || 0}°)</label>
-            <input 
-              type="range" min="0" max="180" step="5" className="w-full accent-black cursor-pointer"
-              value={element.curvatura || 0}
-              onChange={(e) => onUpdate({ curvatura: parseInt(e.target.value) })}
-            />
-          </div>
-        </div>
-      )}
     </div>
   );
 };

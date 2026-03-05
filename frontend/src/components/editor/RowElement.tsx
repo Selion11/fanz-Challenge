@@ -6,9 +6,11 @@ interface RowVisualProps {
   areaName: string;
   onDragStart: (e: React.MouseEvent) => void;
   isSelected?: boolean;
+  onRotateStart?: (e: React.MouseEvent) => void;
+  onCurveStart?: (e: React.MouseEvent) => void;
 }
 
-export const RowVisual = ({ element, color, areaName, onDragStart, isSelected }: RowVisualProps) => {
+export const RowVisual = ({ element, color, areaName, onDragStart, isSelected, onRotateStart, onCurveStart }: RowVisualProps) => {
   const numAsientos = Number(element.asientos?.length || 0);
   const spacing = 35; 
   const curvatura = Number(element.curvatura || 0);
@@ -101,6 +103,30 @@ export const RowVisual = ({ element, color, areaName, onDragStart, isSelected }:
           </div>
         ))}
       </div>
+
+      {isSelected && (
+        <div className="absolute top-0 left-0 pointer-events-none" style={{ zIndex: 30 }}>
+            <div className="absolute w-[2px] h-[140px] bg-gray-200/50" style={{ left: 0, top: -70, transform: 'translateX(-50%)' }} />
+            
+            <div
+                className="absolute w-6 h-6 bg-white border-2 border-blue-500 rounded-full flex items-center justify-center cursor-alias pointer-events-auto shadow-md hover:scale-110 transition-transform"
+                style={{ left: 0, top: -70, transform: 'translate(-50%, -50%)' }}
+                onMouseDown={(e) => { e.stopPropagation(); onRotateStart?.(e); }}
+                title="Mantener click para rotar"
+            >
+                <div className="w-2 h-2 bg-blue-500 rounded-full" />
+            </div>
+
+            <div
+                className="absolute w-6 h-6 bg-white border-2 border-green-500 rounded-full flex items-center justify-center cursor-ns-resize pointer-events-auto shadow-md hover:scale-110 transition-transform"
+                style={{ left: 0, top: 70, transform: 'translate(-50%, -50%)' }}
+                onMouseDown={(e) => { e.stopPropagation(); onCurveStart?.(e); }}
+                title="Mantener click para curvar"
+            >
+                 <div className="w-2 h-2 bg-green-500 rounded-full" />
+            </div>
+        </div>
+      )}
     </div>
   );
 };
