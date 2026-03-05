@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { 
   Download, MapPin, DollarSign, Save, Plus, 
-  Armchair, Coffee, Palette, Trash2, TrendingUp,
-  ChevronDown, ChevronRight, Circle, RectangleHorizontal
+  Trash2, TrendingUp, ChevronDown, ChevronRight, 
+  Circle, RectangleHorizontal
 } from 'lucide-react';
 import { SeatMap, Area, MapElement, StageConfig } from '@/types/map';
 import { Button } from '@/components/ui/Button';
@@ -76,8 +76,7 @@ export const Sidebar = ({ map, onUpdateMap, selectedIds, onSelectionChange }: Si
   const [isSaving, setIsSaving] = useState(false);
   const [collapsedAreas, setCollapsedAreas] = useState<Record<string, boolean>>({});
 
-  const LIMITS = { fila: 20, mesa: 15, areas: 20, elementsPerArea: 50 };
-
+  const LIMITS = { fila: 25, mesa: 15, areas: 20, asientosPorFila: 20 };
   const safeSelectedIds = selectedIds || [];
 
   const currentStage: StageConfig = map.escenario || {
@@ -104,24 +103,77 @@ export const Sidebar = ({ map, onUpdateMap, selectedIds, onSelectionChange }: Si
     );
   };
 
+  const addArea = () => {
+    if (map.areas.length >= LIMITS.areas) {
+      alert(`Límite alcanzado: Máximo ${LIMITS.areas} áreas.`);
+      return;
+    }
+    onUpdateMap({
+      ...map, 
+      areas: [...map.areas, { id: crypto.randomUUID(), nombre_area: 'Nueva Área', elementos: [], color: '#000000' }]
+    });
+  };
+
+  const addElement = (areaId: string, tipo: 'fila' | 'mesa') => {
+    const area = map.areas.find(a => a.id === areaId);
+    if (!area) return;
+
+    const countCurrentType = area.elementos.filter(el => el.tipo === tipo).length;
+    if (countCurrentType >= LIMITS[tipo]) {
+      alert(`Límite alcanzado: Máximo ${LIMITS[tipo]} ${tipo === 'fila' ? 'filas' : 'mesas'} por área.`);
+      return;
+    }
+
+    const lastEl = area.elementos[area.elementos.length - 1];
+    
+    const rowHeightStep = 100;
+    const marginThreshold = 850;
+
+    let nextY = lastEl?.posicion ? lastEl.posicion.y + rowHeightStep : 150;
+    let nextX = lastEl?.posicion ? lastEl.posicion.x : 50;
+
+    if (nextY > marginThreshold) { 
+      nextY = 150;
+      nextX += 180; 
+    }
+    
+    if (nextX > 850) nextX = 50;
+
+    const newPos = { x: nextX, y: nextY };
+
+    const newElement: MapElement = tipo === 'fila' 
+      ? { 
+          tipo: 'fila', etiqueta: '', precio: 0, 
+          asientos: Array.from({ length: 5 }, (_, i) => ({ identificador: `${i + 1}` })), 
+          posicion: newPos, curvatura: 0, rotacion: 0 
+        }
+      : { 
+          tipo: 'mesa', etiqueta: '', precio: 0, 
+          sillas: Array.from({ length: 4 }, (_, i) => ({ identificador: `${i + 1}` })), 
+          posicion: newPos 
+        };
+
+    onUpdateMap({ 
+      ...map, 
+      areas: map.areas.map(a => a.id === areaId ? { ...a, elementos: reindexElements([...a.elementos, newElement]) } : a) 
+    });
+  };
+
   const handleDownloadJSON = async () => {
-      try {
-        const blob = await apiService.exportMap(map);
-        
-        const url = window.URL.createObjectURL(blob);
-        const downloadAnchorNode = document.createElement('a');
-        downloadAnchorNode.href = url;
-        downloadAnchorNode.download = `${map.nombre_plano.replace(/\s+/g, '_')}_export.json`;
-        document.body.appendChild(downloadAnchorNode);
-        downloadAnchorNode.click();
-        
-        window.URL.revokeObjectURL(url);
-        downloadAnchorNode.remove();
-      } catch (err) {
-        alert('Hubo un problema al exportar el mapa. Revisá la consola.');
-        console.error(err);
-      }
-    };
+    try {
+      const blob = await apiService.exportMap(map);
+      const url = window.URL.createObjectURL(blob);
+      const downloadAnchorNode = document.createElement('a');
+      downloadAnchorNode.href = url;
+      downloadAnchorNode.download = `${map.nombre_plano.replace(/\s+/g, '_')}_export.json`;
+      document.body.appendChild(downloadAnchorNode);
+      downloadAnchorNode.click();
+      window.URL.revokeObjectURL(url);
+      downloadAnchorNode.remove();
+    } catch (err) {
+      alert('Error al exportar');
+    }
+  };
 
   const handleSave = async () => {
     if (!map.id) return alert('Error de ID');
@@ -133,10 +185,8 @@ export const Sidebar = ({ map, onUpdateMap, selectedIds, onSelectionChange }: Si
   };
 
   const deleteSelectedElements = () => {
-    const count = safeSelectedIds.length;
-    if (count === 0) return;
-
-    if (window.confirm(`¿Estás seguro de que querés borrar los ${count} elementos seleccionados?`)) {
+    if (safeSelectedIds.length === 0) return;
+    if (window.confirm(`¿Borrar ${safeSelectedIds.length} elementos?`)) {
       const newMap = { ...map };
       newMap.areas = newMap.areas.map(area => ({
         ...area,
@@ -148,10 +198,7 @@ export const Sidebar = ({ map, onUpdateMap, selectedIds, onSelectionChange }: Si
   };
 
   const updateStage = (updates: Partial<StageConfig>) => {
-    onUpdateMap({
-      ...map,
-      escenario: { ...currentStage, ...updates }
-    });
+    onUpdateMap({ ...map, escenario: { ...currentStage, ...updates } });
   };
 
   const updateArea = (areaId: string, updates: Partial<Area>) => {
@@ -159,32 +206,12 @@ export const Sidebar = ({ map, onUpdateMap, selectedIds, onSelectionChange }: Si
   };
 
   const removeArea = (areaId: string) => {
-    if (confirm('¿Estás seguro de que querés eliminar esta área y todos sus elementos?')) {
+    if (confirm('¿Eliminar área y sus elementos?')) {
       onUpdateMap({ ...map, areas: map.areas.filter(a => a.id !== areaId) });
     }
   };
 
-  const addElement = (areaId: string, tipo: 'fila' | 'mesa') => {
-    const area = map.areas.find(a => a.id === areaId);
-    if (!area || area.elementos.length >= LIMITS.elementsPerArea) return;
-    const lastEl = area.elementos[area.elementos.length - 1];
-    const newPos = lastEl?.posicion ? { x: lastEl.posicion.x, y: lastEl.posicion.y + 80 } : { x: 50, y: 150 };
-
-    const newElement: MapElement = tipo === 'fila' 
-      ? { tipo: 'fila', etiqueta: '', precio: 0, asientos: Array.from({ length: 5 }, (_, i) => ({ identificador: `${i + 1}` })), posicion: newPos, curvatura: 0, rotacion: 0 }
-      : { tipo: 'mesa', etiqueta: '', precio: 0, sillas: Array.from({ length: 4 }, (_, i) => ({ identificador: `${i + 1}` })), posicion: newPos };
-
-    onUpdateMap({ ...map, areas: map.areas.map(a => a.id === areaId ? { ...a, elementos: reindexElements([...a.elementos, newElement]) } : a) });
-  };
-
   const updateElement = (areaId: string, idx: number, updates: any) => {
-    const area = map.areas.find(a => a.id === areaId);
-    const targetEl = area?.elementos[idx];
-
-    if (updates.cantidad === 0) {
-      if (!window.confirm(`¿Estás seguro de que querés borrar ${targetEl?.tipo === 'fila' ? 'la fila' : 'la mesa'} ${targetEl?.etiqueta}?`)) return;
-    }
-
     onUpdateMap({
       ...map,
       areas: map.areas.map(a => {
@@ -195,7 +222,7 @@ export const Sidebar = ({ map, onUpdateMap, selectedIds, onSelectionChange }: Si
           if (updates.cantidad <= 0) {
             newElems.splice(idx, 1);
           } else {
-            const capped = Math.min(Math.max(0, updates.cantidad), LIMITS[target.tipo]);
+            const capped = Math.min(Math.max(0, updates.cantidad), (target.tipo === 'fila' ? LIMITS.asientosPorFila : LIMITS.mesa));
             const seats = Array.from({ length: capped }, (_, i) => ({ identificador: `${i + 1}` }));
             newElems[idx] = { ...target, ...(target.tipo === 'fila' ? { asientos: seats } : { sillas: seats }) } as MapElement;
           }
@@ -218,114 +245,65 @@ export const Sidebar = ({ map, onUpdateMap, selectedIds, onSelectionChange }: Si
           <p className="text-[9px] font-bold text-gray-400 uppercase">Recaudación Potencial</p>
           <p className="text-2xl font-black">${totalRevenue.toLocaleString()}</p>
         </div>
-        <Button variant="secondary" className="w-full text-white bg-white/10 hover:bg-white/20 border-none h-9 text-xs cursor-pointer" onClick={() => onUpdateMap({...map, areas: [...map.areas, {id: crypto.randomUUID(), nombre_area: 'Nueva Área', elementos: [], color: '#000000'}]})}><Plus size={14} className="mr-2" /> Área</Button>
+        <Button variant="secondary" className="w-full text-white bg-white/10 hover:bg-white/20 border-none h-9 text-xs cursor-pointer" onClick={addArea}><Plus size={14} className="mr-2" /> Área</Button>
       </div>
 
       <div className="flex-1 overflow-y-auto p-3 space-y-4">
-        
         <Card className="w-[96%] mx-auto bg-white shadow-sm border-t-4 border-gray-800 overflow-hidden mb-2">
           <div className="p-4 space-y-4">
-            <h4 className="font-bold text-xs text-gray-800 uppercase tracking-wider flex items-center gap-2">
-               Escenario
-            </h4>
-            
+            <h4 className="font-bold text-xs text-gray-800 uppercase tracking-wider flex items-center gap-2">Escenario</h4>
             <div className="grid grid-cols-2 gap-2">
-               <button 
-                  onClick={() => updateStage({forma: 'rectangulo'})} 
-                  className={`flex flex-col items-center justify-center p-2 text-[9px] font-bold border rounded transition-colors ${currentStage.forma === 'rectangulo' ? 'bg-black text-white border-black' : 'hover:bg-gray-50 text-gray-500'}`}
-               >
-                 <RectangleHorizontal size={14} className="mb-1" /> RECTÁNGULO
-               </button>
-               <button 
-                  onClick={() => updateStage({forma: 'circulo'})} 
-                  className={`flex flex-col items-center justify-center p-2 text-[9px] font-bold border rounded transition-colors ${currentStage.forma === 'circulo' ? 'bg-black text-white border-black' : 'hover:bg-gray-50 text-gray-500'}`}
-               >
-                 <Circle size={14} className="mb-1" /> CÍRCULO
-               </button>
+               <button onClick={() => updateStage({forma: 'rectangulo'})} className={`flex flex-col items-center justify-center p-2 text-[9px] font-bold border rounded transition-colors ${currentStage.forma === 'rectangulo' ? 'bg-black text-white border-black' : 'hover:bg-gray-50 text-gray-500'}`}><RectangleHorizontal size={14} className="mb-1" /> RECTÁNGULO</button>
+               <button onClick={() => updateStage({forma: 'circulo'})} className={`flex flex-col items-center justify-center p-2 text-[9px] font-bold border rounded transition-colors ${currentStage.forma === 'circulo' ? 'bg-black text-white border-black' : 'hover:bg-gray-50 text-gray-500'}`}><Circle size={14} className="mb-1" /> CÍRCULO</button>
             </div>
-
             <div className="grid grid-cols-2 gap-3 pt-2">
               <div className="space-y-1">
                 <label className="text-[8px] font-bold text-gray-500 uppercase">Ancho ({currentStage.ancho}px)</label>
-                <input 
-                  type="range" min="100" max="800" step="10" 
-                  value={currentStage.ancho} 
-                  onChange={(e) => updateStage({ancho: parseInt(e.target.value)})} 
-                  className="w-full accent-black cursor-pointer" 
-                />
+                <input type="range" min="100" max="800" step="10" value={currentStage.ancho} onChange={(e) => updateStage({ancho: parseInt(e.target.value)})} className="w-full accent-black cursor-pointer" />
               </div>
-              
               <div className={`space-y-1 transition-opacity ${currentStage.forma === 'circulo' ? 'opacity-30 pointer-events-none' : 'opacity-100'}`}>
                 <label className="text-[8px] font-bold text-gray-500 uppercase">Alto ({currentStage.alto}px)</label>
-                <input 
-                  type="range" min="50" max="600" step="10" 
-                  value={currentStage.alto} 
-                  onChange={(e) => updateStage({alto: parseInt(e.target.value)})} 
-                  className="w-full accent-black cursor-pointer" 
-                />
+                <input type="range" min="50" max="600" step="10" value={currentStage.alto} onChange={(e) => updateStage({alto: parseInt(e.target.value)})} className="w-full accent-black cursor-pointer" />
               </div>
             </div>
           </div>
         </Card>
 
-        {map.areas.map((area) => {
-          const isCollapsed = collapsedAreas[area.id!];
-
-          return (
-            <Card key={area.id} className="w-[96%] mx-auto bg-white shadow-sm border-t-4 overflow-hidden" style={{ borderTopColor: area.color }}>
-              <div className="p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 flex-1">
-                    <button onClick={() => toggleArea(area.id!)} className="p-1 text-gray-400 cursor-pointer">{isCollapsed ? <ChevronRight size={16} /> : <ChevronDown size={16} />}</button>
-                    <input className="font-bold text-sm bg-transparent outline-none w-full border-b border-transparent focus:border-gray-100" value={area.nombre_area} onChange={(e) => updateArea(area.id!, { nombre_area: e.target.value })} />
+        {map.areas.map((area) => (
+          <Card key={area.id} className="w-[96%] mx-auto bg-white shadow-sm border-t-4 overflow-hidden" style={{ borderTopColor: area.color }}>
+            <div className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 flex-1">
+                  <button onClick={() => toggleArea(area.id!)} className="p-1 text-gray-400 cursor-pointer">{collapsedAreas[area.id!] ? <ChevronRight size={16} /> : <ChevronDown size={16} />}</button>
+                  <input className="font-bold text-sm bg-transparent outline-none w-full border-b border-transparent focus:border-gray-100" value={area.nombre_area} onChange={(e) => updateArea(area.id!, { nombre_area: e.target.value })} />
+                </div>
+                <div className="flex items-center gap-2 ml-4">
+                  <button onClick={() => removeArea(area.id!)} className="p-1 text-gray-400 hover:text-red-500 rounded cursor-pointer transition-colors"><Trash2 size={14} /></button>
+                  <input type="color" className="w-6 h-6 p-0 border-none bg-transparent cursor-pointer" value={area.color} onChange={(e) => updateArea(area.id!, { color: e.target.value })} />
+                </div>
+              </div>
+              {!collapsedAreas[area.id!] && (
+                <div className="mt-4 space-y-4">
+                  <div className="grid grid-cols-2 gap-2">
+                    <button onClick={() => addElement(area.id!, 'fila')} className="p-2 border border-dashed rounded text-[10px] font-bold hover:bg-gray-50 cursor-pointer flex items-center justify-center gap-1"><Plus size={12} /> FILA</button>
+                    <button onClick={() => addElement(area.id!, 'mesa')} className="p-2 border border-dashed rounded text-[10px] font-bold hover:bg-gray-50 cursor-pointer flex items-center justify-center gap-1"><Plus size={12} /> MESA</button>
                   </div>
-                  <div className="flex items-center gap-2 ml-4">
-                    <button onClick={() => removeArea(area.id!)} className="p-1 text-gray-400 hover:text-red-500 rounded cursor-pointer transition-colors"><Trash2 size={14} /></button>
-                    <input type="color" className="w-6 h-6 p-0 border-none bg-transparent cursor-pointer" value={area.color} onChange={(e) => updateArea(area.id!, { color: e.target.value })} />
+                  <div className="space-y-3">
+                    {area.elementos.map((el, idx) => (
+                      <ElementCard key={idx} element={el} areaColor={area.color!} maxSeats={el.tipo === 'fila' ? LIMITS.asientosPorFila : LIMITS.mesa} isSelected={safeSelectedIds.includes(`${area.id}|${el.etiqueta}`)} onUpdate={(u) => updateElement(area.id!, idx, u)} onSelect={() => onSelectionChange(safeSelectedIds.includes(`${area.id}|${el.etiqueta}`) ? safeSelectedIds.filter(i => i !== `${area.id}|${el.etiqueta}`) : [...safeSelectedIds, `${area.id}|${el.etiqueta}`])} />
+                    ))}
                   </div>
                 </div>
-                {!isCollapsed && (
-                  <div className="mt-4 space-y-4 animate-in fade-in slide-in-from-top-1">
-                    <div className="grid grid-cols-2 gap-2">
-                      <button onClick={() => addElement(area.id!, 'fila')} className="p-2 border border-dashed rounded text-[10px] font-bold hover:bg-gray-50 cursor-pointer flex items-center justify-center gap-1"><Plus size={12} /> FILA</button>
-                      <button onClick={() => addElement(area.id!, 'mesa')} className="p-2 border border-dashed rounded text-[10px] font-bold hover:bg-gray-50 cursor-pointer flex items-center justify-center gap-1"><Plus size={12} /> MESA</button>
-                    </div>
-                    <div className="space-y-3">
-                      {area.elementos.map((el, idx) => (
-                        <ElementCard 
-                          key={idx} 
-                          element={el} 
-                          areaColor={area.color!} 
-                          maxSeats={LIMITS[el.tipo]} 
-                          isSelected={safeSelectedIds.includes(`${area.id}|${el.etiqueta}`)}
-                          onUpdate={(u) => updateElement(area.id!, idx, u)}
-                          onSelect={() => {
-                            const id = `${area.id}|${el.etiqueta}`;
-                            onSelectionChange(safeSelectedIds.includes(id) ? safeSelectedIds.filter(i => i !== id) : [...safeSelectedIds, id]);
-                          }}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </Card>
-          );
-        })}
+              )}
+            </div>
+          </Card>
+        ))}
       </div>
 
       <div className="p-4 bg-white border-t border-gray-100 space-y-2">
-        {safeSelectedIds.length > 0 && (
-          <Button variant="danger" className="w-full bg-red-600 hover:bg-red-700 text-white font-bold h-10 mb-2 flex items-center justify-center" onClick={deleteSelectedElements}>
-            <Trash2 size={16} className="mr-2" /> BORRAR SELECCIONADOS ({safeSelectedIds.length})
-          </Button>
-        )}
-        <Button className="w-full bg-black hover:bg-gray-800 text-white text-xs h-10 font-bold flex items-center justify-center" onClick={handleSave} isLoading={isSaving}>
-          <Save size={14} className="mr-2" /> GUARDAR EN SERVIDOR
-        </Button>
-        <Button variant="secondary" className="w-full text-xs h-9 font-bold flex items-center justify-center" onClick={handleDownloadJSON}>
-          <Download size={14} className="mr-2" /> EXPORTAR JSON
-        </Button>
+        {safeSelectedIds.length > 0 && <Button variant="danger" className="w-full bg-red-600 hover:bg-red-700 text-white font-bold h-10 mb-2 flex items-center justify-center" onClick={deleteSelectedElements}><Trash2 size={16} className="mr-2" /> BORRAR ({safeSelectedIds.length})</Button>}
+        <Button className="w-full bg-black hover:bg-gray-800 text-white text-xs h-10 font-bold flex items-center justify-center" onClick={handleSave} isLoading={isSaving}><Save size={14} className="mr-2" /> GUARDAR</Button>
+        <Button variant="secondary" className="w-full text-xs h-9 font-bold flex items-center justify-center" onClick={handleDownloadJSON}><Download size={14} className="mr-2" /> EXPORTAR JSON</Button>
       </div>
     </div>
   );

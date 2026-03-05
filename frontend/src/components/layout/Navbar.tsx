@@ -1,4 +1,3 @@
-// src/components/layout/Navbar.tsx
 'use client';
 
 import React, { useState } from 'react';
@@ -9,7 +8,7 @@ import { Button } from '@/components/ui/Button';
 import { apiService } from '@/services/api';
 
 interface NavbarProps {
-  onNewMap?: () => void; // Si se pasa, abre el modal. Si no, redirige a home.
+  onNewMap?: () => void; 
 }
 
 export const Navbar = ({ onNewMap }: NavbarProps) => {
@@ -46,7 +45,6 @@ export const Navbar = ({ onNewMap }: NavbarProps) => {
 
   return (
     <nav className="h-16 border-b bg-white flex items-center justify-between px-8 shadow-sm">
-      {/* Click en el nombre redirecciona a Home */}
       <Link href="/" className="flex items-center gap-3 group">
         <div className="bg-black p-2 rounded-lg text-white group-hover:rotate-12 transition-transform">
           <MapIcon size={20} />

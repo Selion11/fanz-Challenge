@@ -96,7 +96,6 @@ export const tableService = {
     }
 
     let nuevasSillas = existingTable.sillas;
-    // CORRECCIÓN: Usamos existingTable en lugar de existingRow
     if (data.cantidad_sillas !== undefined && data.cantidad_sillas !== existingTable.sillas.length) {
         nuevasSillas = tableService._generateTableSeats(data.cantidad_sillas);
     }

@@ -37,7 +37,6 @@ export default function Home() {
     const rowCount = area.elementos.filter(el => el.tipo === 'fila').length;
     const tableCount = area.elementos.filter(el => el.tipo === 'mesa').length;
 
-    // FIX: Agregamos posición, rotación y curvatura iniciales para evitar errores
     let newElement: MapElement;
     if (tipo === 'fila') {
       newElement = {

@@ -20,7 +20,6 @@ export const rowService = {
 
   _calculateNextPosition: (elementos: MapElement[]): ElementPosition => {
     if (elementos.length === 0) return { x: 50, y: 50 };
-    // Buscamos el punto más bajo actual para evitar superposición inicial
     const maxY = Math.max(...elementos.map(el => el.posicion.y));
     return { x: 50, y: maxY + 80 }; 
   },

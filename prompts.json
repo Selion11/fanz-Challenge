@@ -568,6 +568,24 @@
                 "prompt": "Ahora quiero lo siguiente, quiero poder curvar y rotar varias filas a la vez. Y que cuando una o varias filas esten selecionadas aparezcan botones para mantener presionados y girar el mouse para rotar o curvar las filas. Como se hace en powerpoint",
                 "notes": "Paso 1 completado. Se modificó RowElement.tsx para agregar los callbacks onRotateStart y onCurveStart. Se inyectó una nueva capa condicional (isSelected) que dibuja un eje visual y dos manillares interactivos en los extremos del eje local (Y:-70 y Y:70) simulando la UI de transformación de objetos de PowerPoint."
             }
+        },
+        {
+            "entry": {
+                "timestamp": "2026-03-05T18:20:10-03:00",
+                "tool/model": "Gemini 3.1 Pro",
+                "purpose": "Generar el archivo README.md final integrando las tecnologías, instrucciones de test y justificaciones de diseño (Teatro Colón).",
+                "prompt": "Quiero que generes un README del proyecto. Quiero que en el readme detalles las tednologias utilizada, des intrucciones de inicio (recordando que esta el run.sh), des intrucciones de como correr los tests y expliques que las desciciones tomadas para los limites de asientos fueron tomados en cuentas invetigando sobre teatros como el teatro colon",
+                "notes": "Se identificaron áreas de mejora en la documentación (README) para garantizar la máxima puntuación en la entrega."
+            }
+        },
+        {
+            "entry": {
+                "timestamp": "2026-03-05T18:32:00-03:00",
+                "tool/model": "Gemini 3.1 Pro",
+                "purpose": "Implementación de validación de límites de negocio y restricciones de colisión con bordes del canvas.",
+                "prompt": "Hay un error que arreglar, no hay limite de filas que se pueda crear... mesas estas salen del canvas.",
+                "notes": "Se aplicaron guard clauses en Sidebar.tsx para respetar los límites de 20 áreas y 50 elementos/área. Se implementó lógica de 'clamping' en SeatMapCanvas.tsx para restringir las coordenadas X/Y de los elementos, evitando que se desplacen fuera de los límites visibles del editor durante el drag-and-drop."
+            }
         }
     ]
 }
