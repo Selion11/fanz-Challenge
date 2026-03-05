@@ -11,6 +11,7 @@ echo -e "${BLUE}🚀 Iniciando el ecosistema de SeatMapBuilder...${NC}"
 cleanup() {
     echo -e "\n${BLUE}🛑 Apagando servicios...${NC}"
     kill $BACKEND_PID $FRONTEND_PID
+    sleep 5
     exit
 }
 
