@@ -41,4 +41,19 @@ export const apiService = {
     if (!res.ok) throw new Error('Error al guardar cambios');
     return res.json();
   },
+  
+  exportMap: async (mapData: SeatMap): Promise<Blob> => {
+    const res = await fetch(`${API_BASE_URL}/maps/system?action=export`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(mapData),
+    });
+    
+    if (!res.ok) {
+      const error = await res.text();
+      throw new Error(error || 'Error al exportar el mapa');
+    }
+    
+    return res.blob();
+  },
 };

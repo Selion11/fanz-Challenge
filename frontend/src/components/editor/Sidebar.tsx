@@ -126,30 +126,23 @@ export const Sidebar = ({ map, onUpdateMap, selectedIds, onSelectionChange }: Si
   };
 
   const handleDownloadJSON = async () => {
-    try {
-      const response = await fetch('/api/system?action=export', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(map),
-      });
-
-      if (!response.ok) throw new Error('Error en el servidor al exportar');
-
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const downloadAnchorNode = document.createElement('a');
-      downloadAnchorNode.href = url;
-      downloadAnchorNode.download = `${map.nombre_plano.replace(/\s+/g, '_')}_export.json`;
-      document.body.appendChild(downloadAnchorNode);
-      downloadAnchorNode.click();
-      
-      window.URL.revokeObjectURL(url);
-      downloadAnchorNode.remove();
-    } catch (err) {
-      alert('Hubo un problema al exportar el mapa. Revisá la consola.');
-      console.error(err);
-    }
-  };
+      try {
+        const blob = await apiService.exportMap(map);
+        
+        const url = window.URL.createObjectURL(blob);
+        const downloadAnchorNode = document.createElement('a');
+        downloadAnchorNode.href = url;
+        downloadAnchorNode.download = `${map.nombre_plano.replace(/\s+/g, '_')}_export.json`;
+        document.body.appendChild(downloadAnchorNode);
+        downloadAnchorNode.click();
+        
+        window.URL.revokeObjectURL(url);
+        downloadAnchorNode.remove();
+      } catch (err) {
+        alert('Hubo un problema al exportar el mapa. Revisá la consola.');
+        console.error(err);
+      }
+    };
 
   const handleSave = async () => {
     if (!map.id) return alert('Error de ID');
@@ -246,7 +239,7 @@ export const Sidebar = ({ map, onUpdateMap, selectedIds, onSelectionChange }: Si
           <p className="text-[9px] font-bold text-gray-400 uppercase">Recaudación Potencial</p>
           <p className="text-2xl font-black">${totalRevenue.toLocaleString()}</p>
         </div>
-        <Button variant="secondary" className="w-full text-white bg-white/10 hover:bg-white/20 border-none h-9 text-xs cursor-pointer" onClick={() => onUpdateMap({...map, areas: [...map.areas, {id: crypto.randomUUID(), nombre_area: 'Nueva Área', elementos: [], color: '#000'}]})}><Plus size={14} className="mr-2" /> Área</Button>
+        <Button variant="secondary" className="w-full text-white bg-white/10 hover:bg-white/20 border-none h-9 text-xs cursor-pointer" onClick={() => onUpdateMap({...map, areas: [...map.areas, {id: crypto.randomUUID(), nombre_area: 'Nueva Área', elementos: [], color: '#000000'}]})}><Plus size={14} className="mr-2" /> Área</Button>
       </div>
 
       <div className="flex-1 overflow-y-auto p-3 space-y-4">

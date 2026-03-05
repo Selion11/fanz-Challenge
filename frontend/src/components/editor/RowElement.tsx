@@ -9,9 +9,11 @@ interface RowVisualProps {
 }
 
 export const RowVisual = ({ element, color, areaName, onDragStart, isSelected }: RowVisualProps) => {
-  const numAsientos = element.asientos?.length || 0;
+  const numAsientos = Number(element.asientos?.length || 0);
   const spacing = 35; 
-  const curvatura = element.curvatura || 0;
+  const curvatura = Number(element.curvatura || 0);
+  const rotacion = Number(element.rotacion || 0);
+  
   const curvaturaRad = curvatura * (Math.PI / 180);
   const isLineal = Math.abs(curvatura) < 1;
   const divisor = numAsientos > 1 ? numAsientos - 1 : 1;
@@ -20,7 +22,6 @@ export const RowVisual = ({ element, color, areaName, onDragStart, isSelected }:
   const seatBorderWidth = isSelected ? '2px' : '2px';
   const pathId = `path-${areaName}-${element.etiqueta}`.replace(/\s+/g, '-');
 
-  // 1. Calculamos la posición de cada asiento y su respectivo punto en la línea conectora
   const seatsRender = element.asientos?.map((asiento, i) => {
     let x = 0; let y = 0; let seatAngle = 0;
 
@@ -30,7 +31,6 @@ export const RowVisual = ({ element, color, areaName, onDragStart, isSelected }:
       seatAngle = 0;
     } else {
       const radio = (numAsientos * spacing) / (curvaturaRad || 0.001);
-      // Centramos el arco en el eje Y local para que alinear la rotación sea natural
       const baseTheta = -Math.PI / 2;
       const theta = baseTheta + (curvaturaRad * (i - (numAsientos - 1) / 2)) / divisor;
       
@@ -39,7 +39,6 @@ export const RowVisual = ({ element, color, areaName, onDragStart, isSelected }:
       seatAngle = (theta * 180) / Math.PI + 90;
     }
 
-    // Calculamos el punto de la línea SVG (25px por encima del asiento siguiendo su normal)
     const upAngleRad = (seatAngle - 90) * (Math.PI / 180);
     const px = x + 25 * Math.cos(upAngleRad);
     const py = y + 25 * Math.sin(upAngleRad);
@@ -47,7 +46,6 @@ export const RowVisual = ({ element, color, areaName, onDragStart, isSelected }:
     return { x, y, seatAngle, px, py, identificador: asiento.identificador };
   }) || [];
 
-  // 2. Generamos el SVG Path que une esos puntos
   const pathD = seatsRender.length > 1 
     ? "M " + seatsRender.map(s => `${s.px},${s.py}`).join(" L ") 
     : seatsRender.length === 1 
@@ -58,28 +56,23 @@ export const RowVisual = ({ element, color, areaName, onDragStart, isSelected }:
     <div 
       className="relative select-none group"
       style={{ 
-        // Rotamos todo el conjunto desde el centro (0,0)
-        transform: `rotate(${element.rotacion || 0}deg)`,
+        transform: `rotate(${rotacion}deg)`,
         transformOrigin: '0 0' 
       }}
     >
-      {/* CAPA 1: Línea conectora y Etiqueta en SVG */}
       <svg className="absolute overflow-visible pointer-events-none" style={{ left: 0, top: 0, zIndex: 0 }}>
         {seatsRender.length > 0 && (
           <>
-            {/* Manillar invisible y grueso para facilitar el drag & drop */}
             <path 
               d={pathD} fill="none" stroke="transparent" strokeWidth="30" 
               className="pointer-events-auto cursor-grab active:cursor-grabbing"
               onMouseDown={(e) => { e.stopPropagation(); onDragStart(e); }} 
             />
-            {/* Línea visible de la etiqueta */}
             <path 
               id={pathId} d={pathD} fill="none" stroke={seatBorderColor} 
               strokeWidth={isSelected ? "3" : "2"} 
               className={isSelected ? "opacity-100" : "opacity-40"} 
             />
-            {/* Texto que sigue la curvatura del path */}
             <text fill={seatBorderColor} className="text-[9px] font-black uppercase tracking-[0.2em] pointer-events-none" dy="-6">
               <textPath href={`#${pathId}`} startOffset="50%" textAnchor="middle">
                 {areaName} - {element.etiqueta}
@@ -89,7 +82,6 @@ export const RowVisual = ({ element, color, areaName, onDragStart, isSelected }:
         )}
       </svg>
 
-      {/* CAPA 2: Asientos */}
       <div className="relative">
         {seatsRender.map((s, i) => (
           <div 

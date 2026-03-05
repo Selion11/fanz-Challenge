@@ -37,7 +37,6 @@ export interface Area {
   elementos: MapElement[];
 }
 
-// --- NUEVAS INTERFACES PARA EL ESCENARIO ---
 export interface StageConfig {
   forma: 'circulo' | 'cuadrado' | 'rectangulo';
   posicion: ElementPosition;
@@ -49,5 +48,5 @@ export interface SeatMap {
   id?: string;
   nombre_plano: string;
   areas: Area[];
-  escenario?: StageConfig; // Lo agregamos como opcional para no romper mapas viejos
+  escenario?: StageConfig; 
 }
