@@ -550,6 +550,15 @@
                 "prompt": "Quiero que de la caja de arrastre se vea solo el reborde asi se puede ver lo que se esta seleccionando",
                 "notes": "Se eliminaron las clases de Tailwind 'bg-blue-500' y 'bg-opacity-20' del div de 'selectionBox', reemplazándolas por 'border-dashed' para dejar únicamente un reborde azul que permite ver claramente los elementos subyacentes."
             }
+        },
+        {
+            "entry": {
+                "timestamp": "2026-03-05T17:45:20-03:00",
+                "tool/model": "Gemini 3 Flash",
+                "purpose": "Conversión del escenario estático a un elemento dinámico, redimensionable y movible.",
+                "prompt": "Ahora quiero poder editar el escenario, quiero que pueda elegir si es un circulo, un cuadrado o un rectangulo. Elegir su posicion de la misma manera que muevo los demas elementos. Quiero ademas poder elegir el tamanio de dicho escenario",
+                "notes": "Paso 1: Se actualizó la interfaz SeatMap para incluir StageConfig. Se refactorizó SeatMapCanvas para renderizar el escenario dinámicamente usando border-radius condicional y se integró en el flujo de activeDrag para permitir su posicionamiento absoluto mediante drag and drop."
+            }
         }
     ]
 }

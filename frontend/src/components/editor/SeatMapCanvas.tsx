@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { SeatMap, MapElement, ElementPosition } from '@/types/map';
+import { SeatMap, MapElement, ElementPosition, StageConfig } from '@/types/map';
 import { RowVisual } from './RowElement';
 import { TableVisual } from './TableElement';
 
@@ -13,6 +13,7 @@ interface SeatMapCanvasProps {
 export const SeatMapCanvas = ({ map, onUpdateMap, selectedIds, onSelectionChange }: SeatMapCanvasProps) => {
   const [activeDrag, setActiveDrag] = useState<{
     elements: { areaId: string; label: string; initialPos: ElementPosition }[];
+    stage?: { initialPos: ElementPosition }; 
     offset: ElementPosition;
   } | null>(null);
 
@@ -26,6 +27,30 @@ export const SeatMapCanvas = ({ map, onUpdateMap, selectedIds, onSelectionChange
   const canvasRef = useRef<HTMLDivElement>(null);
   const safeSelectedIds = selectedIds || [];
   const safeUpdateMap = onUpdateMap || (() => {});
+
+  const defaultStage: StageConfig = map.escenario || {
+    forma: 'rectangulo',
+    posicion: { x: 300, y: 50 },
+    ancho: 400,
+    alto: 100
+  };
+
+  const handleStageMouseDown = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!canvasRef.current) return;
+    
+    const rect = canvasRef.current.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+
+    setActiveDrag({
+      elements: [],
+      stage: { initialPos: { ...defaultStage.posicion } },
+      offset: { x: mouseX, y: mouseY }
+    });
+    
+    onSelectionChange([]);
+  };
 
   const handleElementMouseDown = (areaId: string, elemento: MapElement, e: React.MouseEvent) => {
     e.stopPropagation(); 
@@ -75,12 +100,7 @@ export const SeatMapCanvas = ({ map, onUpdateMap, selectedIds, onSelectionChange
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
-    setSelectionBox({
-      startX: x,
-      startY: y,
-      currentX: x,
-      currentY: y
-    });
+    setSelectionBox({ startX: x, startY: y, currentX: x, currentY: y });
     
     if (!e.shiftKey) {
       onSelectionChange([]);
@@ -98,16 +118,29 @@ export const SeatMapCanvas = ({ map, onUpdateMap, selectedIds, onSelectionChange
       const deltaY = y - activeDrag.offset.y;
 
       const newMap = { ...map };
-      activeDrag.elements.forEach(dragged => {
-        const area = newMap.areas.find(a => a.id === dragged.areaId);
-        const element = area?.elementos.find(el => el.etiqueta === dragged.label);
-        if (element) {
-          element.posicion = {
-            x: dragged.initialPos.x + deltaX,
-            y: dragged.initialPos.y + deltaY
-          };
-        }
-      });
+
+      if (activeDrag.stage) {
+        newMap.escenario = {
+          ...defaultStage,
+          posicion: {
+            x: activeDrag.stage.initialPos.x + deltaX,
+            y: activeDrag.stage.initialPos.y + deltaY
+          }
+        };
+      } 
+      else {
+        activeDrag.elements.forEach(dragged => {
+          const area = newMap.areas.find(a => a.id === dragged.areaId);
+          const element = area?.elementos.find(el => el.etiqueta === dragged.label);
+          if (element) {
+            element.posicion = {
+              x: dragged.initialPos.x + deltaX,
+              y: dragged.initialPos.y + deltaY
+            };
+          }
+        });
+      }
+      
       safeUpdateMap(newMap);
       return;
     }
@@ -164,7 +197,6 @@ export const SeatMapCanvas = ({ map, onUpdateMap, selectedIds, onSelectionChange
       onMouseLeave={handleMouseUp}
       onMouseDown={handleCanvasMouseDown}
     >
-      {/* Caja visual de selección: Solo reborde punteado */}
       {selectionBox && (
         <div 
           className="absolute border-2 border-blue-500 border-dashed z-50 pointer-events-none"
@@ -185,9 +217,21 @@ export const SeatMapCanvas = ({ map, onUpdateMap, selectedIds, onSelectionChange
       </div>
 
       <div className="relative h-full">
-        {/* Escenario */}
-        <div className="mb-32 border-2 border-dashed border-gray-200 rounded-2xl p-8 text-center bg-gray-50/50 pointer-events-none">
-          <span className="text-sm font-black text-gray-300 uppercase tracking-[1em]">ESCENARIO</span>
+        
+        <div 
+          className={`absolute border-2 border-dashed border-gray-300 bg-gray-50/80 flex items-center justify-center cursor-grab active:cursor-grabbing hover:border-gray-400 transition-colors shadow-sm z-0`}
+          style={{
+            left: defaultStage.posicion.x,
+            top: defaultStage.posicion.y,
+            width: defaultStage.ancho,
+            height: defaultStage.forma === 'circulo' ? defaultStage.ancho : defaultStage.alto,
+            borderRadius: defaultStage.forma === 'circulo' ? '50%' : defaultStage.forma === 'cuadrado' ? '16px' : '16px',
+          }}
+          onMouseDown={handleStageMouseDown}
+        >
+          <span className="text-sm font-black text-gray-400 uppercase tracking-[1em] pointer-events-none">
+            ESCENARIO
+          </span>
         </div>
 
         {map.areas.map((area) => (

@@ -21,12 +21,12 @@ export const seatMapService = {
     const newMap: SeatMap = {
       id: randomUUID(),
       nombre_plano: data.nombre_plano,
-      areas: data.areas || [], 
+      areas: data.areas || [],
+      escenario: data.escenario // <-- AGREGAMOS ESTA LÍNEA
     };
     maps.push(newMap);
     return newMap;
   },
-
 
   update: (id: string, data: SeatMap): SeatMap | null => {
     if (!data.nombre_plano) {
@@ -36,10 +36,10 @@ export const seatMapService = {
     const index = maps.findIndex(m => m.id === id);
     if (index === -1) return null;
     
+    // Al usar el spread operator, 'escenario' se actualiza automáticamente
     maps[index] = { ...data, id }; 
     return maps[index];
   },
-
 
   delete: (id: string): boolean => {
     const initialLength = maps.length;
@@ -47,12 +47,12 @@ export const seatMapService = {
     return maps.length !== initialLength;
   },
 
-
   importMap: (fullMap: SeatMap): SeatMap => {
     if (!fullMap.nombre_plano || !Array.isArray(fullMap.areas)) {
       throw new Error('Estructura de mapa inválida');
     }
     
+    // Al usar el spread operator, 'escenario' se importa automáticamente
     const newMap: SeatMap = {
       ...fullMap,
       id: fullMap.id || randomUUID() 

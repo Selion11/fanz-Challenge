@@ -5,6 +5,13 @@ export interface ElementPosition {
   y: number;
 }
 
+export interface StageConfig {
+  forma: 'circulo' | 'cuadrado' | 'rectangulo';
+  posicion: ElementPosition;
+  ancho: number;
+  alto: number;
+}
+
 export interface Seat {
   identificador: string; 
 }
@@ -41,4 +48,5 @@ export interface SeatMap {
   id?: string;
   nombre_plano: string;
   areas: Area[];
+  escenario?: StageConfig;
 }

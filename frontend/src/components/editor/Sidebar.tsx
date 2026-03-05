@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { 
   Download, MapPin, DollarSign, Save, Plus, 
   Armchair, Coffee, Palette, Trash2, TrendingUp,
-  ChevronDown, ChevronRight 
+  ChevronDown, ChevronRight, Circle, RectangleHorizontal
 } from 'lucide-react';
-import { SeatMap, Area, MapElement } from '@/types/map';
+import { SeatMap, Area, MapElement, StageConfig } from '@/types/map';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { apiService } from '@/services/api';
@@ -12,7 +12,6 @@ import { apiService } from '@/services/api';
 interface SidebarProps {
   map: SeatMap;
   onUpdateMap: (newMap: SeatMap) => void;
-  // Nuevas props para la selección múltiple
   selectedIds: string[];
   onSelectionChange: (ids: string[]) => void;
 }
@@ -100,6 +99,15 @@ export const Sidebar = ({ map, onUpdateMap, selectedIds, onSelectionChange }: Si
 
   const LIMITS = { fila: 20, mesa: 15, areas: 20, elementsPerArea: 50 };
 
+  const safeSelectedIds = selectedIds || [];
+
+  const currentStage: StageConfig = map.escenario || {
+    forma: 'rectangulo',
+    posicion: { x: 300, y: 50 },
+    ancho: 400,
+    alto: 100
+  };
+
   const totalRevenue = map.areas.reduce((acc, area) => {
     return acc + area.elementos.reduce((elAcc, el) => {
       const seats = el.tipo === 'fila' ? el.asientos?.length : el.sillas?.length;
@@ -117,14 +125,30 @@ export const Sidebar = ({ map, onUpdateMap, selectedIds, onSelectionChange }: Si
     );
   };
 
-  const handleDownloadJSON = () => {
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(map, null, 2));
-    const downloadAnchorNode = document.createElement('a');
-    downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute("download", `${map.nombre_plano.replace(/\s+/g, '_')}_export.json`);
-    document.body.appendChild(downloadAnchorNode);
-    downloadAnchorNode.click();
-    downloadAnchorNode.remove();
+  const handleDownloadJSON = async () => {
+    try {
+      const response = await fetch('/api/system?action=export', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(map),
+      });
+
+      if (!response.ok) throw new Error('Error en el servidor al exportar');
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const downloadAnchorNode = document.createElement('a');
+      downloadAnchorNode.href = url;
+      downloadAnchorNode.download = `${map.nombre_plano.replace(/\s+/g, '_')}_export.json`;
+      document.body.appendChild(downloadAnchorNode);
+      downloadAnchorNode.click();
+      
+      window.URL.revokeObjectURL(url);
+      downloadAnchorNode.remove();
+    } catch (err) {
+      alert('Hubo un problema al exportar el mapa. Revisá la consola.');
+      console.error(err);
+    }
   };
 
   const handleSave = async () => {
@@ -132,38 +156,39 @@ export const Sidebar = ({ map, onUpdateMap, selectedIds, onSelectionChange }: Si
     setIsSaving(true);
     try {
       await apiService.updateMap(map.id, map);
-      alert('¡Guardado!');
+      alert('¡Mapa guardado con éxito!');
     } catch (err) { alert('Error al guardar'); } finally { setIsSaving(false); }
   };
 
   const deleteSelectedElements = () => {
-    const count = selectedIds.length;
+    const count = safeSelectedIds.length;
     if (count === 0) return;
 
     if (window.confirm(`¿Estás seguro de que querés borrar los ${count} elementos seleccionados?`)) {
       const newMap = { ...map };
       newMap.areas = newMap.areas.map(area => ({
         ...area,
-        elementos: area.elementos.filter(el => !selectedIds.includes(`${area.id}|${el.etiqueta}`))
+        elementos: area.elementos.filter(el => !safeSelectedIds.includes(`${area.id}|${el.etiqueta}`))
       }));
       onUpdateMap(newMap);
       onSelectionChange([]);
     }
   };
 
-  const updateArea = (areaId: string, updates: Partial<Area>) => {
+  const updateStage = (updates: Partial<StageConfig>) => {
     onUpdateMap({
       ...map,
-      areas: map.areas.map(a => a.id === areaId ? { ...a, ...updates } : a)
+      escenario: { ...currentStage, ...updates }
     });
+  };
+
+  const updateArea = (areaId: string, updates: Partial<Area>) => {
+    onUpdateMap({ ...map, areas: map.areas.map(a => a.id === areaId ? { ...a, ...updates } : a) });
   };
 
   const removeArea = (areaId: string) => {
     if (confirm('¿Estás seguro de que querés eliminar esta área y todos sus elementos?')) {
-      onUpdateMap({
-        ...map,
-        areas: map.areas.filter(a => a.id !== areaId)
-      });
+      onUpdateMap({ ...map, areas: map.areas.filter(a => a.id !== areaId) });
     }
   };
 
@@ -182,12 +207,10 @@ export const Sidebar = ({ map, onUpdateMap, selectedIds, onSelectionChange }: Si
 
   const updateElement = (areaId: string, idx: number, updates: any) => {
     const area = map.areas.find(a => a.id === areaId);
-    const target = area?.elementos[idx];
+    const targetEl = area?.elementos[idx];
 
     if (updates.cantidad === 0) {
-      if (!window.confirm(`¿Estás seguro de que querés borrar la ${target?.tipo === 'fila' ? 'fila' : 'mesa'} ${target?.etiqueta}?`)) {
-        return;
-      }
+      if (!window.confirm(`¿Estás seguro de que querés borrar ${targetEl?.tipo === 'fila' ? 'la fila' : 'la mesa'} ${targetEl?.etiqueta}?`)) return;
     }
 
     onUpdateMap({
@@ -227,52 +250,102 @@ export const Sidebar = ({ map, onUpdateMap, selectedIds, onSelectionChange }: Si
       </div>
 
       <div className="flex-1 overflow-y-auto p-3 space-y-4">
-        {map.areas.map((area) => (
-          <Card key={area.id} className="w-[96%] mx-auto bg-white shadow-sm border-t-4" style={{ borderTopColor: area.color }}>
-            <div className="p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 flex-1">
-                  <button onClick={() => toggleArea(area.id!)} className="p-1 text-gray-400 cursor-pointer">{collapsedAreas[area.id!] ? <ChevronRight size={16} /> : <ChevronDown size={16} />}</button>
-                  <input className="font-bold text-sm bg-transparent outline-none w-full border-b border-transparent focus:border-gray-100" value={area.nombre_area} onChange={(e) => updateArea(area.id!, { nombre_area: e.target.value })} />
-                </div>
-                <div className="flex items-center gap-2">
-                  <button onClick={() => removeArea(area.id!)} className="p-1 text-gray-400 hover:text-red-500 rounded cursor-pointer transition-colors"><Trash2 size={14} /></button>
-                  <input type="color" className="w-6 h-6 p-0 border-none bg-transparent cursor-pointer" value={area.color} onChange={(e) => updateArea(area.id!, { color: e.target.value })} />
-                </div>
-              </div>
-              {!collapsedAreas[area.id!] && (
-                <div className="mt-4 space-y-4 animate-in fade-in slide-in-from-top-1">
-                  <div className="grid grid-cols-2 gap-2">
-                    <button onClick={() => addElement(area.id!, 'fila')} className="p-2 border border-dashed rounded text-[10px] font-bold hover:bg-gray-50 cursor-pointer flex items-center justify-center gap-1"><Plus size={12} /> FILA</button>
-                    <button onClick={() => addElement(area.id!, 'mesa')} className="p-2 border border-dashed rounded text-[10px] font-bold hover:bg-gray-50 cursor-pointer flex items-center justify-center gap-1"><Plus size={12} /> MESA</button>
-                  </div>
-                  <div className="space-y-3">
-                    {area.elementos.map((el, idx) => (
-                      <ElementCard 
-                        key={idx} 
-                        element={el} 
-                        areaColor={area.color!} 
-                        maxSeats={LIMITS[el.tipo]} 
-                        isSelected={selectedIds.includes(`${area.id}|${el.etiqueta}`)}
-                        onUpdate={(u) => updateElement(area.id!, idx, u)}
-                        onSelect={() => {
-                          const id = `${area.id}|${el.etiqueta}`;
-                          onSelectionChange(selectedIds.includes(id) ? selectedIds.filter(i => i !== id) : [...selectedIds, id]);
-                        }}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
+        
+        <Card className="w-[96%] mx-auto bg-white shadow-sm border-t-4 border-gray-800 overflow-hidden mb-2">
+          <div className="p-4 space-y-4">
+            <h4 className="font-bold text-xs text-gray-800 uppercase tracking-wider flex items-center gap-2">
+               Escenario
+            </h4>
+            
+            <div className="grid grid-cols-2 gap-2">
+               <button 
+                  onClick={() => updateStage({forma: 'rectangulo'})} 
+                  className={`flex flex-col items-center justify-center p-2 text-[9px] font-bold border rounded transition-colors ${currentStage.forma === 'rectangulo' ? 'bg-black text-white border-black' : 'hover:bg-gray-50 text-gray-500'}`}
+               >
+                 <RectangleHorizontal size={14} className="mb-1" /> RECTÁNGULO
+               </button>
+               <button 
+                  onClick={() => updateStage({forma: 'circulo'})} 
+                  className={`flex flex-col items-center justify-center p-2 text-[9px] font-bold border rounded transition-colors ${currentStage.forma === 'circulo' ? 'bg-black text-white border-black' : 'hover:bg-gray-50 text-gray-500'}`}
+               >
+                 <Circle size={14} className="mb-1" /> CÍRCULO
+               </button>
             </div>
-          </Card>
-        ))}
+
+            <div className="grid grid-cols-2 gap-3 pt-2">
+              <div className="space-y-1">
+                <label className="text-[8px] font-bold text-gray-500 uppercase">Ancho ({currentStage.ancho}px)</label>
+                <input 
+                  type="range" min="100" max="800" step="10" 
+                  value={currentStage.ancho} 
+                  onChange={(e) => updateStage({ancho: parseInt(e.target.value)})} 
+                  className="w-full accent-black cursor-pointer" 
+                />
+              </div>
+              
+              <div className={`space-y-1 transition-opacity ${currentStage.forma === 'circulo' ? 'opacity-30 pointer-events-none' : 'opacity-100'}`}>
+                <label className="text-[8px] font-bold text-gray-500 uppercase">Alto ({currentStage.alto}px)</label>
+                <input 
+                  type="range" min="50" max="600" step="10" 
+                  value={currentStage.alto} 
+                  onChange={(e) => updateStage({alto: parseInt(e.target.value)})} 
+                  className="w-full accent-black cursor-pointer" 
+                />
+              </div>
+            </div>
+          </div>
+        </Card>
+
+        {map.areas.map((area) => {
+          const isCollapsed = collapsedAreas[area.id!];
+
+          return (
+            <Card key={area.id} className="w-[96%] mx-auto bg-white shadow-sm border-t-4 overflow-hidden" style={{ borderTopColor: area.color }}>
+              <div className="p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 flex-1">
+                    <button onClick={() => toggleArea(area.id!)} className="p-1 text-gray-400 cursor-pointer">{isCollapsed ? <ChevronRight size={16} /> : <ChevronDown size={16} />}</button>
+                    <input className="font-bold text-sm bg-transparent outline-none w-full border-b border-transparent focus:border-gray-100" value={area.nombre_area} onChange={(e) => updateArea(area.id!, { nombre_area: e.target.value })} />
+                  </div>
+                  <div className="flex items-center gap-2 ml-4">
+                    <button onClick={() => removeArea(area.id!)} className="p-1 text-gray-400 hover:text-red-500 rounded cursor-pointer transition-colors"><Trash2 size={14} /></button>
+                    <input type="color" className="w-6 h-6 p-0 border-none bg-transparent cursor-pointer" value={area.color} onChange={(e) => updateArea(area.id!, { color: e.target.value })} />
+                  </div>
+                </div>
+                {!isCollapsed && (
+                  <div className="mt-4 space-y-4 animate-in fade-in slide-in-from-top-1">
+                    <div className="grid grid-cols-2 gap-2">
+                      <button onClick={() => addElement(area.id!, 'fila')} className="p-2 border border-dashed rounded text-[10px] font-bold hover:bg-gray-50 cursor-pointer flex items-center justify-center gap-1"><Plus size={12} /> FILA</button>
+                      <button onClick={() => addElement(area.id!, 'mesa')} className="p-2 border border-dashed rounded text-[10px] font-bold hover:bg-gray-50 cursor-pointer flex items-center justify-center gap-1"><Plus size={12} /> MESA</button>
+                    </div>
+                    <div className="space-y-3">
+                      {area.elementos.map((el, idx) => (
+                        <ElementCard 
+                          key={idx} 
+                          element={el} 
+                          areaColor={area.color!} 
+                          maxSeats={LIMITS[el.tipo]} 
+                          isSelected={safeSelectedIds.includes(`${area.id}|${el.etiqueta}`)}
+                          onUpdate={(u) => updateElement(area.id!, idx, u)}
+                          onSelect={() => {
+                            const id = `${area.id}|${el.etiqueta}`;
+                            onSelectionChange(safeSelectedIds.includes(id) ? safeSelectedIds.filter(i => i !== id) : [...safeSelectedIds, id]);
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </Card>
+          );
+        })}
       </div>
 
       <div className="p-4 bg-white border-t border-gray-100 space-y-2">
-        {selectedIds.length > 0 && (
+        {safeSelectedIds.length > 0 && (
           <Button variant="danger" className="w-full bg-red-600 hover:bg-red-700 text-white font-bold h-10 mb-2 flex items-center justify-center" onClick={deleteSelectedElements}>
-            <Trash2 size={16} className="mr-2" /> BORRAR SELECCIONADOS ({selectedIds.length})
+            <Trash2 size={16} className="mr-2" /> BORRAR SELECCIONADOS ({safeSelectedIds.length})
           </Button>
         )}
         <Button className="w-full bg-black hover:bg-gray-800 text-white text-xs h-10 font-bold flex items-center justify-center" onClick={handleSave} isLoading={isSaving}>
