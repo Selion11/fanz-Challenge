@@ -1,12 +1,12 @@
 # SeatMapBuilder - Interactive Floor Plan Editor
 
-[cite_start]Este proyecto es un editor visual interactivo desarrollado para la prueba técnica de **Fanz**[cite: 1]. [cite_start]Permite la creación, edición y gestión de mapas de asientos complejos (teatros, estadios, eventos) con una experiencia de usuario orientada a la manipulación directa sobre el lienzo (WYSIWYG)[cite: 3, 4, 5].
+Este proyecto es un editor visual interactivo desarrollado para la prueba técnica de **Fanz**. Permite la creación, edición y gestión de mapas de asientos complejos (teatros, estadios, eventos) con una experiencia de usuario orientada a la manipulación directa sobre el lienzo (WYSIWYG).
 
 
 
 ## 🚀 Instrucciones de Inicio
 
-[cite_start]Para facilitar el despliegue de ambos entornos (Frontend y Backend), el repositorio incluye un script de automatización.
+Para facilitar el despliegue de ambos entornos (Frontend y Backend), el repositorio incluye un script de automatización.
 
 1.  **Clonar el repositorio.**
 2.  **Dar permisos de ejecución al script:**
@@ -17,16 +17,16 @@
     ```bash
     ./run.sh
     ```
-    * [cite_start]**Frontend**: [http://localhost:3000](http://localhost:3000) (Next.js)[cite: 7].
-    * [cite_start]**Backend**: [http://localhost:8080](http://localhost:8080) (Node.js Express / Next API)[cite: 7].
+    * **Frontend**: [http://localhost:3000](http://localhost:3000) (Next.js).
+    * **Backend**: [http://localhost:8080](http://localhost:8080) (Node.js Express / Next API).
 
 ## 🛠️ Tecnologías Utilizadas
 
-* [cite_start]**Frontend**: React + TypeScript + Next.js (App Router)[cite: 7].
+* **Frontend**: React + TypeScript + Next.js (App Router).
 * **Estilos**: Tailwind CSS para una interfaz moderna y eficiente.
 * **Iconografía**: Lucide React.
-* [cite_start]**Backend**: Node.js con servicios en memoria para persistencia rápida[cite: 7, 26].
-* [cite_start]**Interacción**: Implementación nativa de transformaciones trigonométricas y selección por lotes (Lasso Selection)[cite: 12].
+* **Backend**: Node.js con servicios en memoria para persistencia rápida.
+* **Interacción**: Implementación nativa de transformaciones trigonométricas y selección por lotes (Lasso Selection).
 
 ## 🧪 Tests
 
