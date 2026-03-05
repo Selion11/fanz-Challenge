@@ -20,7 +20,7 @@ const MapList = ({ maps }: { maps: SeatMap[] }) => {
   return (
     <div className="w-full max-w-2xl space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] mb-2">
-        Mapas en Memoria
+        Tus mapas
       </h3>
       <div className="grid gap-3">
         {maps.map((map,index) => (
