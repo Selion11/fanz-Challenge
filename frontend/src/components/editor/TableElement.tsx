@@ -4,16 +4,17 @@ interface TableVisualProps {
   element: TableType;
   color: string;
   areaName: string;
+  onDragStart: (e: React.MouseEvent) => void;
 }
 
-export const TableVisual = ({ element, color, areaName }: TableVisualProps) => {
+export const TableVisual = ({ element, color, areaName, onDragStart }: TableVisualProps) => {
   const sillaCount = element.sillas?.length || 0;
   const tableRadius = 30 + (sillaCount * 2);
   const chairDistance = tableRadius + 12;
 
   return (
     <div 
-      className="relative flex items-center justify-center group" 
+      className="relative flex items-center justify-center group select-none" 
       style={{ width: chairDistance * 2.5, height: chairDistance * 2.5 }}
     >
       <div 
@@ -23,8 +24,12 @@ export const TableVisual = ({ element, color, areaName }: TableVisualProps) => {
           borderColor: color,
           color: color
         }}
-        className="absolute bg-white border-2 rounded-full flex items-center justify-center shadow-sm z-10 transition-transform group-hover:scale-105"
+        className="absolute bg-white border-2 rounded-full flex items-center justify-center shadow-sm z-10 cursor-grab active:cursor-grabbing transition-transform group-hover:scale-105"
         title={`Área: ${areaName}\nMesa: ${element.etiqueta}`}
+        onMouseDown={(e) => {
+          e.stopPropagation();
+          onDragStart(e); 
+        }}
       >
         <span className="text-[10px] font-black">{element.etiqueta}</span>
       </div>
@@ -37,15 +42,12 @@ export const TableVisual = ({ element, color, areaName }: TableVisualProps) => {
         return (
           <div 
             key={idx}
-            className="absolute w-4 h-4 rounded-full border-2 transition-all cursor-help"
+            className="absolute w-4 h-4 rounded-full border-2 bg-white cursor-help"
             style={{ 
               transform: `translate(${x}px, ${y}px)`,
               borderColor: color,
-              backgroundColor: 'white'
             }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = color}
-            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'white'}
-            title={`Área: ${areaName}\nMesa: ${element.etiqueta}\nSilla: ${idx + 1}\nPrecio: $${element.precio}`}
+            title={`Área: ${areaName}\nMesa: ${element.etiqueta}\nPrecio: $${element.precio}`}
           />
         );
       })}

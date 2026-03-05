@@ -1,4 +1,4 @@
-import { RowElement, Seat, Area } from '@/model/types';
+import { RowElement, Seat, Area, MapElement, ElementPosition } from '@/model/types';
 import { seatMapService } from './seatMapService';
 
 export const rowService = {
@@ -18,6 +18,13 @@ export const rowService = {
     }));
   },
 
+  _calculateNextPosition: (elementos: MapElement[]): ElementPosition => {
+    if (elementos.length === 0) return { x: 50, y: 50 };
+    // Buscamos el punto más bajo actual para evitar superposición inicial
+    const maxY = Math.max(...elementos.map(el => el.posicion.y));
+    return { x: 50, y: maxY + 80 }; 
+  },
+
   addRow: (mapId: string, areaId: string, data: { cantidad_asientos: number, precio?: number }): RowElement => {
      const rows = rowService.createMultipleRows(mapId, areaId, { ...data, cantidad: 1 });
      return rows[0];
@@ -35,35 +42,39 @@ export const rowService = {
     }
 
     if (data.cantidad < 1) throw new Error('La cantidad a crear debe ser al menos 1');
-    
     if (data.cantidad_asientos < 1) throw new Error('La fila debe tener al menos 1 asiento al crearse');
     if (data.cantidad_asientos > 20) throw new Error('Una fila no puede tener más de 20 asientos');
 
     const filasExistentes = area.elementos.filter(e => e.tipo === 'fila').length;
-    
     if (filasExistentes + data.cantidad > 15) {
       throw new Error(`No se pueden crear ${data.cantidad} filas. El límite por área es 15 y ya hay ${filasExistentes}.`);
     }
 
     const createdRows: RowElement[] = [];
+    // Calculamos la posición de la primera fila del lote
+    let currentY = rowService._calculateNextPosition(area.elementos).y;
 
     for (let i = 0; i < data.cantidad; i++) {
         const newRow: RowElement = {
             tipo: 'fila',
             etiqueta: '', 
             precio: data.precio || 0,
-            asientos: rowService._generateSeats(data.cantidad_asientos)
+            asientos: rowService._generateSeats(data.cantidad_asientos),
+            // Asignamos posición única para evitar solapamiento
+            posicion: { x: 50, y: currentY } 
         };
         area.elementos.push(newRow);
         createdRows.push(newRow);
+        
+        // Incrementamos el desplazamiento vertical para la siguiente fila del lote
+        currentY += 80;
     }
     
     rowService._recalculateRowLabels(area);
-
     return createdRows;
   },
 
-  updateRow: (mapId: string, areaId: string, rowLabel: string, data: { cantidad_asientos?: number, precio?: number }): RowElement | { deleted: true } => {
+  updateRow: (mapId: string, areaId: string, rowLabel: string, data: { cantidad_asientos?: number, precio?: number, posicion?: ElementPosition }): RowElement | { deleted: true } => {
     const map = seatMapService.getById(mapId);
     if (!map) throw new Error('Mapa no encontrado');
 
@@ -101,7 +112,9 @@ export const rowService = {
     const updatedRow: RowElement = {
       ...existingRow,
       precio: data.precio ?? existingRow.precio,
-      asientos: nuevosAsientos
+      asientos: nuevosAsientos,
+      // Persistimos la nueva posición tras el arrastre
+      posicion: data.posicion ?? existingRow.posicion 
     };
 
     area.elementos[rowIndex] = updatedRow;

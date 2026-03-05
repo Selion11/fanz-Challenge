@@ -26,6 +26,7 @@ cd ..
 
 # 2. Iniciar el Frontend
 echo -e "${GREEN}💻 Levantando Frontend en la raíz...${NC}"
+cd frontend
 npm run dev &
 FRONTEND_PID=$!
 

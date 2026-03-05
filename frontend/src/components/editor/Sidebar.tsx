@@ -1,5 +1,8 @@
 import React from 'react';
-import { Download, MapPin, DollarSign, Save, Plus, Armchair, Coffee, Palette, Trash2 } from 'lucide-react';
+import { 
+  Download, MapPin, DollarSign, Save, Plus, 
+  Armchair, Coffee, Palette, Trash2, TrendingUp 
+} from 'lucide-react';
 import { SeatMap, Area, MapElement } from '@/types/map';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -73,6 +76,14 @@ export const Sidebar = ({ map, onUpdateMap }: SidebarProps) => {
     elementsPerArea: 50
   };
 
+  // Cálculo de Recaudación Total
+  const totalRevenue = map.areas.reduce((acc, area) => {
+    return acc + area.elementos.reduce((elAcc, el) => {
+      const seats = el.tipo === 'fila' ? el.asientos?.length : el.sillas?.length;
+      return elAcc + (el.precio * (seats || 0));
+    }, 0);
+  }, 0);
+
   const reindexElements = (elements: MapElement[]): MapElement[] => {
     let rowCount = 0;
     let tableCount = 0;
@@ -137,11 +148,18 @@ export const Sidebar = ({ map, onUpdateMap }: SidebarProps) => {
 
   const addElement = (areaId: string, tipo: 'fila' | 'mesa') => {
     const area = map.areas.find(a => a.id === areaId);
-    if (!area || area.elementos.length >= LIMITS.elementsPerArea) return alert("Límite de elementos alcanzado");
+    if (!area || area.elementos.length >= LIMITS.elementsPerArea) return alert("Límite alcanzado");
+
+    const lastElement = area.elementos[area.elementos.length - 1];
+    
+    // FIX: Garantizamos que la posición exista siempre para evitar el crash del Canvas
+    const newPos = lastElement?.posicion 
+      ? { x: lastElement.posicion.x, y: lastElement.posicion.y + 80 } 
+      : { x: 50, y: 150 };
 
     const newElement: MapElement = tipo === 'fila' 
-      ? { tipo: 'fila', etiqueta: '', precio: 0, asientos: [{ identificador: '1' }] }
-      : { tipo: 'mesa', etiqueta: '', precio: 0, sillas: [{ identificador: '1' }] };
+      ? { tipo: 'fila', etiqueta: '', precio: 0, asientos: Array.from({ length: 5 }, (_, i) => ({ identificador: `${i + 1}` })), posicion: newPos }
+      : { tipo: 'mesa', etiqueta: '', precio: 0, sillas: Array.from({ length: 4 }, (_, i) => ({ identificador: `${i + 1}` })), posicion: newPos };
 
     onUpdateMap({
       ...map,
@@ -164,10 +182,11 @@ export const Sidebar = ({ map, onUpdateMap }: SidebarProps) => {
             const capped = Math.min(updates.cantidad, LIMITS[target.tipo]);
             const updated = { ...target, ...updates };
             const seats = Array.from({ length: capped }, (_, i) => ({ identificador: `${i + 1}` }));
-            target.tipo === 'fila' ? updated.asientos = seats : updated.sillas = seats;
+            target.tipo === 'fila' ? (updated as any).asientos = seats : (updated as any).sillas = seats;
             newElems[elementIdx] = updated as MapElement;
           }
         } else {
+          // Mantenemos la posición actual si solo cambia el precio u otra prop
           newElems[elementIdx] = { ...target, ...updates } as MapElement;
         }
         return { ...a, elementos: reindexElements(newElems) };
@@ -177,23 +196,43 @@ export const Sidebar = ({ map, onUpdateMap }: SidebarProps) => {
 
   return (
     <div className="h-full flex flex-col bg-gray-50 border-l border-gray-200">
-      <div className="p-6 bg-white border-b border-gray-100 space-y-4">
-        <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
-          <MapPin size={12} /> {map.nombre_plano || 'Sin nombre'}
-        </h3>
-        <Button variant="secondary" className="w-full justify-center h-9 text-xs cursor-pointer" onClick={addArea}>
+      {/* Resumen de Recaudación */}
+      <div className="p-6 bg-gradient-to-br from-gray-900 to-black text-white space-y-4">
+        <div className="flex justify-between items-start">
+          <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
+            <MapPin size={12} className="text-white" /> {map.nombre_plano || 'Sin nombre'}
+          </h3>
+          <TrendingUp size={16} className="text-green-400" />
+        </div>
+        
+        <div className="space-y-1">
+          <p className="text-[9px] font-bold text-gray-400 uppercase">Potencial de Venta</p>
+          <p className="text-2xl font-black tracking-tighter">
+            ${totalRevenue.toLocaleString('es-AR')}
+          </p>
+        </div>
+
+        <Button 
+          variant="secondary" 
+          className="w-full justify-center h-9 text-xs font-bold bg-white/10 hover:bg-white/20 border-none text-white cursor-pointer" 
+          onClick={addArea}
+        >
           <Plus size={14} className="mr-2" /> Añadir Área
         </Button>
       </div>
 
       <div className="flex-1 overflow-y-auto p-3 space-y-6">
         {map.areas.map((area) => (
-          <Card key={area.id} className="w-[96%] mx-auto p-4 bg-white shadow-sm border-t-4" style={{ borderTopColor: area.color || '#000' }}>
+          <Card key={area.id} className="w-[96%] mx-auto p-4 bg-white shadow-sm border-t-4 overflow-hidden" style={{ borderTopColor: area.color || '#000' }}>
             <div className="flex items-center justify-between mb-4">
-              <input className="font-bold text-sm bg-transparent outline-none border-b border-transparent focus:border-gray-200 w-1/2" value={area.nombre_area} onChange={(e) => updateArea(area.id, { nombre_area: e.target.value })} />
+              <input 
+                className="font-bold text-sm bg-transparent outline-none border-b border-transparent focus:border-gray-100 w-1/2" 
+                value={area.nombre_area} 
+                onChange={(e) => updateArea(area.id!, { nombre_area: e.target.value })} 
+              />
               <div className="flex items-center gap-2">
                 <button 
-                  onClick={() => removeArea(area.id)}
+                  onClick={() => removeArea(area.id!)}
                   className="p-1 hover:bg-red-50 text-gray-400 hover:text-red-500 rounded transition-colors cursor-pointer"
                   title="Eliminar Área"
                 >
@@ -201,16 +240,39 @@ export const Sidebar = ({ map, onUpdateMap }: SidebarProps) => {
                 </button>
                 <div className="w-px h-4 bg-gray-200 mx-1" />
                 <Palette size={14} className="text-gray-400" />
-                <input type="color" className="w-6 h-6 p-0 border-none cursor-pointer bg-transparent" value={area.color || '#000000'} onChange={(e) => updateArea(area.id, { color: e.target.value })} />
+                <input 
+                  type="color" 
+                  className="w-6 h-6 p-0 border-none cursor-pointer bg-transparent" 
+                  value={area.color || '#000000'} 
+                  onChange={(e) => updateArea(area.id!, { color: e.target.value })} 
+                />
               </div>
             </div>
+
             <div className="grid grid-cols-2 gap-2 mb-4">
-              <button onClick={() => addElement(area.id, 'fila')} className="flex items-center justify-center gap-2 p-2 rounded-lg border border-dashed border-gray-300 text-[10px] font-bold hover:bg-gray-50 cursor-pointer"><Plus size={12} /><Armchair size={12} /> FILA</button>
-              <button onClick={() => addElement(area.id, 'mesa')} className="flex items-center justify-center gap-2 p-2 rounded-lg border border-dashed border-gray-300 text-[10px] font-bold hover:bg-gray-50 cursor-pointer"><Plus size={12} /><Coffee size={12} /> MESA</button>
+              <button 
+                onClick={() => addElement(area.id!, 'fila')} 
+                className="flex items-center justify-center gap-2 p-2 rounded-lg border border-dashed border-gray-300 text-[10px] font-bold hover:bg-gray-50 cursor-pointer text-gray-600 active:scale-95 transition-transform"
+              >
+                <Plus size={12} /><Armchair size={12} /> FILA
+              </button>
+              <button 
+                onClick={() => addElement(area.id!, 'mesa')} 
+                className="flex items-center justify-center gap-2 p-2 rounded-lg border border-dashed border-gray-300 text-[10px] font-bold hover:bg-gray-50 cursor-pointer text-gray-600 active:scale-95 transition-transform"
+              >
+                <Plus size={12} /><Coffee size={12} /> MESA
+              </button>
             </div>
+
             <div className="space-y-3">
               {area.elementos.map((el, idx) => (
-                <ElementCard key={idx} element={el} areaColor={area.color || '#000'} maxSeats={LIMITS[el.tipo]} onUpdate={(u) => updateElement(area.id, idx, u)} />
+                <ElementCard 
+                  key={idx} 
+                  element={el} 
+                  areaColor={area.color || '#000'} 
+                  maxSeats={LIMITS[el.tipo]} 
+                  onUpdate={(u) => updateElement(area.id!, idx, u)} 
+                />
               ))}
             </div>
           </Card>
@@ -221,7 +283,7 @@ export const Sidebar = ({ map, onUpdateMap }: SidebarProps) => {
         <Button variant="secondary" className="w-full justify-center text-xs font-bold cursor-pointer transition-transform active:scale-95" onClick={handleDownloadJSON}>
           <Download size={14} className="mr-2" /> EXPORTAR JSON
         </Button>
-        <Button className="w-full justify-center text-xs font-bold cursor-pointer shadow-lg active:scale-95" onClick={handleSave} isLoading={isSaving}>
+        <Button className="w-full justify-center text-xs font-bold cursor-pointer shadow-lg active:scale-95 bg-black hover:bg-gray-800" onClick={handleSave} isLoading={isSaving}>
           <Save size={14} className="mr-2" /> GUARDAR EN SERVIDOR
         </Button>
       </div>

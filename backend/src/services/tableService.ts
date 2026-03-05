@@ -1,5 +1,4 @@
-// src/services/tableService.ts
-import { TableElement, Area, Seat } from '@/model/types';
+import { TableElement, Area, Seat, ElementPosition, MapElement } from '@/model/types';
 import { seatMapService } from './seatMapService';
 
 export const tableService = {
@@ -13,11 +12,16 @@ export const tableService = {
     });
   },
 
-  // Helper para generar sillas con etiqueta individual
   _generateTableSeats: (cantidad: number): Seat[] => {
     return Array.from({ length: cantidad }, (_, i) => ({
       identificador: `Silla ${i + 1}`
     }));
+  },
+
+  _calculateNextPosition: (elementos: MapElement[]): ElementPosition => {
+    if (elementos.length === 0) return { x: 50, y: 50 };
+    const maxY = Math.max(...elementos.map(el => el.posicion.y));
+    return { x: 50, y: maxY + 80 }; 
   },
 
   addTable: (mapId: string, areaId: string, data: { cantidad_sillas: number, precio?: number }): TableElement => {
@@ -32,7 +36,6 @@ export const tableService = {
     const area = map.areas.find(a => a.id === areaId);
     if (!area) throw new Error('Área no encontrada');
 
-    // VALIDACIÓN NUEVA: Precio no negativo
     if (data.precio !== undefined && data.precio < 0) {
       throw new Error('El precio no puede ser negativo');
     }
@@ -41,39 +44,38 @@ export const tableService = {
     if (data.cantidad_sillas < 1) throw new Error('La mesa debe tener al menos 1 silla');
 
     const mesasExistentes = area.elementos.filter(e => e.tipo === 'mesa').length;
-    
     if (mesasExistentes + data.cantidad > 20) {
       throw new Error(`No se pueden crear ${data.cantidad} mesas. El límite por área es 20 y ya hay ${mesasExistentes}.`);
     }
 
     const createdTables: TableElement[] = [];
+    let currentY = tableService._calculateNextPosition(area.elementos).y;
 
     for (let i = 0; i < data.cantidad; i++) {
       const newTable: TableElement = {
         tipo: 'mesa',
         etiqueta: '', 
-        // CAMBIO: Ahora generamos objetos Seat en lugar de guardar un número
         sillas: tableService._generateTableSeats(data.cantidad_sillas),
-        precio: data.precio || 0
+        precio: data.precio || 0,
+        posicion: { x: 50, y: currentY } 
       };
 
       area.elementos.push(newTable);
       createdTables.push(newTable);
+      currentY += 80; 
     }
 
     tableService._recalculateTableLabels(area);
-
     return createdTables;
   },
 
-  updateTable: (mapId: string, areaId: string, tableLabel: string, data: { cantidad_sillas?: number, precio?: number, etiqueta?: string }): TableElement | { deleted: true } => {
+  updateTable: (mapId: string, areaId: string, tableLabel: string, data: { cantidad_sillas?: number, precio?: number, etiqueta?: string, posicion?: ElementPosition }): TableElement | { deleted: true } => {
     const map = seatMapService.getById(mapId);
     if (!map) throw new Error('Mapa no encontrado');
 
     const area = map.areas.find(a => a.id === areaId);
     if (!area) throw new Error('Área no encontrada');
 
-    // VALIDACIÓN NUEVA: Precio no negativo en edición
     if (data.precio !== undefined && data.precio < 0) {
       throw new Error('El precio no puede ser negativo');
     }
@@ -93,8 +95,8 @@ export const tableService = {
       throw new Error('La cantidad de sillas no puede ser negativa');
     }
 
-    // CAMBIO: Si cambian la cantidad, regeneramos el array de sillas
     let nuevasSillas = existingTable.sillas;
+    // CORRECCIÓN: Usamos existingTable en lugar de existingRow
     if (data.cantidad_sillas !== undefined && data.cantidad_sillas !== existingTable.sillas.length) {
         nuevasSillas = tableService._generateTableSeats(data.cantidad_sillas);
     }
@@ -102,8 +104,9 @@ export const tableService = {
     const updatedTable: TableElement = {
       ...existingTable,
       etiqueta: data.etiqueta && data.etiqueta.trim() !== '' ? data.etiqueta.trim() : existingTable.etiqueta,
-      sillas: nuevasSillas, // Usamos el array nuevo o el existente
-      precio: data.precio ?? existingTable.precio
+      sillas: nuevasSillas, 
+      precio: data.precio ?? existingTable.precio,
+      posicion: data.posicion ?? existingTable.posicion
     };
 
     area.elementos[tableIndex] = updatedTable;

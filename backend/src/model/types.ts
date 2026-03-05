@@ -1,5 +1,10 @@
 export type ElementType = 'fila' | 'mesa';
 
+export interface ElementPosition {
+  x: number;
+  y: number;
+}
+
 export interface Seat {
   identificador: string; 
 }
@@ -8,6 +13,7 @@ export interface BaseElement {
   tipo: ElementType;
   etiqueta: string; 
   precio: number;
+  posicion: ElementPosition; 
 }
 
 export interface RowElement extends BaseElement {

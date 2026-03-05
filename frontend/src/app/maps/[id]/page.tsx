@@ -55,7 +55,7 @@ export default function MapEditorPage() {
 
       <div className="flex flex-1 overflow-hidden">
         <main className="flex-1 overflow-auto relative p-12 flex justify-center items-start scrollbar-hide">
-           <SeatMapCanvas map={map} />
+           <SeatMapCanvas map={map} onUpdateMap={handleUpdateMap} />
         </main>
 
         <aside className="w-80 bg-white border-l border-gray-200 shadow-xl z-10 flex flex-col">
