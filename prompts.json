@@ -523,6 +523,33 @@
                 "prompt": "Los carteles estan aparenciendo encima de los asientos y quiero que la rotacion de los asientos sea de todos a la vez. Es decir que si la fila esta mirando para el escenario puedo rotarla para que mire 90 grados para cualquier lado.",
                 "notes": "Se reposicionaron las etiquetas (handles) con translate(-50%, -150%) para evitar solapamientos. Se corrigió la rotación en RowVisual y TableVisual para pivotar el grupo entero, permitiendo orientaciones de 90° o cualquier ángulo relativo al escenario."
             }
+        },
+        {
+            "entry": {
+                "timestamp": "2026-03-05T17:11:00-03:00",
+                "tool/model": "Gemini 3 Flash",
+                "purpose": "Implementación de selección múltiple de elementos y confirmación obligatoria de borrado.",
+                "prompt": "Implementa la seleccion multiple de filas para poder moverlas o borrarlas (antes de borrar una fila o una mesa tenes que pedir confirmacion por parte del usario)",
+                "notes": "Se añadió soporte para selección múltiple con Shift/Click, movimiento sincronizado de grupos y diálogos de confirmación (window.confirm) tanto para borrados individuales como masivos."
+            }
+        },
+        {
+            "entry": {
+                "timestamp": "2026-03-05T17:28:00-03:00",
+                "tool/model": "Gemini 3 Flash",
+                "purpose": "Implementación de selección visual tipo Lasso (Caja de arrastre) y feedback visual detallado en asientos.",
+                "prompt": "Implementa la caja de arrastre y Quiero que todos los asientos de las filas seleccionadas y todas las mesas y asientos de las mesas seleccionadas tengan un reborde azul para mostrar que fueron seleccionados.",
+                "notes": "Se creó un estado 'selectionBox' en el Canvas para dibujar un rectángulo de selección. Se calcularon intersecciones geométricas para selección masiva. Se actualizaron RowVisual y TableVisual para recibir la prop 'isSelected' y pintar bordes azules en asientos/sillas individuales."
+            }
+        },
+        {
+            "entry": {
+                "timestamp": "2026-03-05T17:35:10-03:00",
+                "tool/model": "Gemini 3 Flash",
+                "purpose": "Mejora de la visibilidad de la herramienta Lasso Selection.",
+                "prompt": "Quiero que de la caja de arrastre se vea solo el reborde asi se puede ver lo que se esta seleccionando",
+                "notes": "Se eliminaron las clases de Tailwind 'bg-blue-500' y 'bg-opacity-20' del div de 'selectionBox', reemplazándolas por 'border-dashed' para dejar únicamente un reborde azul que permite ver claramente los elementos subyacentes."
+            }
         }
     ]
 }

@@ -12,27 +12,39 @@ import { apiService } from '@/services/api';
 interface SidebarProps {
   map: SeatMap;
   onUpdateMap: (newMap: SeatMap) => void;
+  // Nuevas props para la selección múltiple
+  selectedIds: string[];
+  onSelectionChange: (ids: string[]) => void;
 }
 
 interface ElementCardProps {
   element: MapElement;
   areaColor: string;
   maxSeats: number;
+  isSelected: boolean;
   onUpdate: (updates: any) => void;
+  onSelect: () => void;
 }
 
-const ElementCard = ({ element, areaColor, maxSeats, onUpdate }: ElementCardProps) => {
+const ElementCard = ({ element, areaColor, maxSeats, isSelected, onUpdate, onSelect }: ElementCardProps) => {
   const quantity = element.tipo === 'fila' ? element.asientos?.length : element.sillas?.length;
 
   return (
-    <div className="p-3 rounded-xl border-l-4 bg-gray-50/50 space-y-3" style={{ borderLeftColor: areaColor }}>
+    <div 
+      className={`p-3 rounded-xl border-l-4 space-y-3 transition-all cursor-pointer ${
+        isSelected ? 'bg-blue-50 border-blue-400 shadow-md' : 'bg-gray-50/50 border-transparent'
+      }`}
+      style={{ borderLeftColor: isSelected ? undefined : areaColor }}
+      onClick={onSelect}
+    >
       <div className="flex justify-between items-center">
         <span className="text-[9px] font-black text-gray-400 uppercase tracking-tighter">
           {element.tipo} - {element.etiqueta}
         </span>
+        {isSelected && <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />}
       </div>
       
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-3" onClick={(e) => e.stopPropagation()}>
         <div className="space-y-1">
           <label className="text-[8px] font-bold text-gray-500 uppercase">Cant. (Máx {maxSeats})</label>
           <input 
@@ -59,7 +71,7 @@ const ElementCard = ({ element, areaColor, maxSeats, onUpdate }: ElementCardProp
       </div>
 
       {element.tipo === 'fila' && (
-        <div className="grid grid-cols-2 gap-3 pt-2 border-t border-gray-100">
+        <div className="grid grid-cols-2 gap-3 pt-2 border-t border-gray-100" onClick={(e) => e.stopPropagation()}>
           <div className="space-y-1">
             <label className="text-[8px] font-bold text-gray-500 uppercase">Rotación ({element.rotacion || 0}°)</label>
             <input 
@@ -82,7 +94,7 @@ const ElementCard = ({ element, areaColor, maxSeats, onUpdate }: ElementCardProp
   );
 };
 
-export const Sidebar = ({ map, onUpdateMap }: SidebarProps) => {
+export const Sidebar = ({ map, onUpdateMap, selectedIds, onSelectionChange }: SidebarProps) => {
   const [isSaving, setIsSaving] = useState(false);
   const [collapsedAreas, setCollapsedAreas] = useState<Record<string, boolean>>({});
 
@@ -97,6 +109,14 @@ export const Sidebar = ({ map, onUpdateMap }: SidebarProps) => {
 
   const toggleArea = (id: string) => setCollapsedAreas(prev => ({ ...prev, [id]: !prev[id] }));
 
+  const reindexElements = (elements: MapElement[]): MapElement[] => {
+    let rowCount = 0; let tableCount = 0;
+    return elements.map((el) => el.tipo === 'fila' 
+      ? { ...el, etiqueta: `Fila ${String.fromCharCode(65 + rowCount++)}` }
+      : { ...el, etiqueta: `M${++tableCount}` }
+    );
+  };
+
   const handleDownloadJSON = () => {
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(map, null, 2));
     const downloadAnchorNode = document.createElement('a');
@@ -105,14 +125,6 @@ export const Sidebar = ({ map, onUpdateMap }: SidebarProps) => {
     document.body.appendChild(downloadAnchorNode);
     downloadAnchorNode.click();
     downloadAnchorNode.remove();
-  };
-
-  const reindexElements = (elements: MapElement[]): MapElement[] => {
-    let rowCount = 0; let tableCount = 0;
-    return elements.map((el) => el.tipo === 'fila' 
-      ? { ...el, etiqueta: `Fila ${String.fromCharCode(65 + rowCount++)}` }
-      : { ...el, etiqueta: `M${++tableCount}` }
-    );
   };
 
   const handleSave = async () => {
@@ -124,12 +136,41 @@ export const Sidebar = ({ map, onUpdateMap }: SidebarProps) => {
     } catch (err) { alert('Error al guardar'); } finally { setIsSaving(false); }
   };
 
+  const deleteSelectedElements = () => {
+    const count = selectedIds.length;
+    if (count === 0) return;
+
+    if (window.confirm(`¿Estás seguro de que querés borrar los ${count} elementos seleccionados?`)) {
+      const newMap = { ...map };
+      newMap.areas = newMap.areas.map(area => ({
+        ...area,
+        elementos: area.elementos.filter(el => !selectedIds.includes(`${area.id}|${el.etiqueta}`))
+      }));
+      onUpdateMap(newMap);
+      onSelectionChange([]);
+    }
+  };
+
+  const updateArea = (areaId: string, updates: Partial<Area>) => {
+    onUpdateMap({
+      ...map,
+      areas: map.areas.map(a => a.id === areaId ? { ...a, ...updates } : a)
+    });
+  };
+
+  const removeArea = (areaId: string) => {
+    if (confirm('¿Estás seguro de que querés eliminar esta área y todos sus elementos?')) {
+      onUpdateMap({
+        ...map,
+        areas: map.areas.filter(a => a.id !== areaId)
+      });
+    }
+  };
+
   const addElement = (areaId: string, tipo: 'fila' | 'mesa') => {
     const area = map.areas.find(a => a.id === areaId);
     if (!area || area.elementos.length >= LIMITS.elementsPerArea) return;
     const lastEl = area.elementos[area.elementos.length - 1];
-    
-    // FIX: Siempre inicializar la posición para evitar el error de lectura de 'x'
     const newPos = lastEl?.posicion ? { x: lastEl.posicion.x, y: lastEl.posicion.y + 80 } : { x: 50, y: 150 };
 
     const newElement: MapElement = tipo === 'fila' 
@@ -140,6 +181,15 @@ export const Sidebar = ({ map, onUpdateMap }: SidebarProps) => {
   };
 
   const updateElement = (areaId: string, idx: number, updates: any) => {
+    const area = map.areas.find(a => a.id === areaId);
+    const target = area?.elementos[idx];
+
+    if (updates.cantidad === 0) {
+      if (!window.confirm(`¿Estás seguro de que querés borrar la ${target?.tipo === 'fila' ? 'fila' : 'mesa'} ${target?.etiqueta}?`)) {
+        return;
+      }
+    }
+
     onUpdateMap({
       ...map,
       areas: map.areas.map(a => {
@@ -147,9 +197,13 @@ export const Sidebar = ({ map, onUpdateMap }: SidebarProps) => {
         let newElems = [...a.elementos];
         const target = newElems[idx];
         if (updates.cantidad !== undefined) {
-          const capped = Math.min(Math.max(0, updates.cantidad), LIMITS[target.tipo]);
-          const seats = Array.from({ length: capped }, (_, i) => ({ identificador: `${i + 1}` }));
-          newElems[idx] = { ...target, ...(target.tipo === 'fila' ? { asientos: seats } : { sillas: seats }) } as MapElement;
+          if (updates.cantidad <= 0) {
+            newElems.splice(idx, 1);
+          } else {
+            const capped = Math.min(Math.max(0, updates.cantidad), LIMITS[target.tipo]);
+            const seats = Array.from({ length: capped }, (_, i) => ({ identificador: `${i + 1}` }));
+            newElems[idx] = { ...target, ...(target.tipo === 'fila' ? { asientos: seats } : { sillas: seats }) } as MapElement;
+          }
         } else {
           newElems[idx] = { ...target, ...updates } as MapElement;
         }
@@ -179,18 +233,34 @@ export const Sidebar = ({ map, onUpdateMap }: SidebarProps) => {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 flex-1">
                   <button onClick={() => toggleArea(area.id!)} className="p-1 text-gray-400 cursor-pointer">{collapsedAreas[area.id!] ? <ChevronRight size={16} /> : <ChevronDown size={16} />}</button>
-                  <input className="font-bold text-sm bg-transparent outline-none w-full" value={area.nombre_area} onChange={(e) => onUpdateMap({...map, areas: map.areas.map(a => a.id === area.id ? {...a, nombre_area: e.target.value} : a)})} />
+                  <input className="font-bold text-sm bg-transparent outline-none w-full border-b border-transparent focus:border-gray-100" value={area.nombre_area} onChange={(e) => updateArea(area.id!, { nombre_area: e.target.value })} />
                 </div>
-                <input type="color" className="w-6 h-6 p-0 border-none bg-transparent cursor-pointer" value={area.color} onChange={(e) => onUpdateMap({...map, areas: map.areas.map(a => a.id === area.id ? {...a, color: e.target.value} : a)})} />
+                <div className="flex items-center gap-2">
+                  <button onClick={() => removeArea(area.id!)} className="p-1 text-gray-400 hover:text-red-500 rounded cursor-pointer transition-colors"><Trash2 size={14} /></button>
+                  <input type="color" className="w-6 h-6 p-0 border-none bg-transparent cursor-pointer" value={area.color} onChange={(e) => updateArea(area.id!, { color: e.target.value })} />
+                </div>
               </div>
               {!collapsedAreas[area.id!] && (
-                <div className="mt-4 space-y-4">
+                <div className="mt-4 space-y-4 animate-in fade-in slide-in-from-top-1">
                   <div className="grid grid-cols-2 gap-2">
-                    <button onClick={() => addElement(area.id!, 'fila')} className="p-2 border border-dashed rounded text-[10px] font-bold hover:bg-gray-50 cursor-pointer"><Plus size={12} /> FILA</button>
-                    <button onClick={() => addElement(area.id!, 'mesa')} className="p-2 border border-dashed rounded text-[10px] font-bold hover:bg-gray-50 cursor-pointer"><Plus size={12} /> MESA</button>
+                    <button onClick={() => addElement(area.id!, 'fila')} className="p-2 border border-dashed rounded text-[10px] font-bold hover:bg-gray-50 cursor-pointer flex items-center justify-center gap-1"><Plus size={12} /> FILA</button>
+                    <button onClick={() => addElement(area.id!, 'mesa')} className="p-2 border border-dashed rounded text-[10px] font-bold hover:bg-gray-50 cursor-pointer flex items-center justify-center gap-1"><Plus size={12} /> MESA</button>
                   </div>
                   <div className="space-y-3">
-                    {area.elementos.map((el, idx) => <ElementCard key={idx} element={el} areaColor={area.color!} maxSeats={LIMITS[el.tipo]} onUpdate={(u) => updateElement(area.id!, idx, u)} />)}
+                    {area.elementos.map((el, idx) => (
+                      <ElementCard 
+                        key={idx} 
+                        element={el} 
+                        areaColor={area.color!} 
+                        maxSeats={LIMITS[el.tipo]} 
+                        isSelected={selectedIds.includes(`${area.id}|${el.etiqueta}`)}
+                        onUpdate={(u) => updateElement(area.id!, idx, u)}
+                        onSelect={() => {
+                          const id = `${area.id}|${el.etiqueta}`;
+                          onSelectionChange(selectedIds.includes(id) ? selectedIds.filter(i => i !== id) : [...selectedIds, id]);
+                        }}
+                      />
+                    ))}
                   </div>
                 </div>
               )}
@@ -200,11 +270,15 @@ export const Sidebar = ({ map, onUpdateMap }: SidebarProps) => {
       </div>
 
       <div className="p-4 bg-white border-t border-gray-100 space-y-2">
-        <Button className="w-full bg-black text-white text-xs h-10 font-bold cursor-pointer" onClick={handleSave} isLoading={isSaving}><Save size={14} className="mr-2" /> GUARDAR</Button>
-        <Button 
-          variant="secondary" className="w-full text-xs h-9 font-bold flex items-center justify-center" 
-          onClick={handleDownloadJSON}
-        >
+        {selectedIds.length > 0 && (
+          <Button variant="danger" className="w-full bg-red-600 hover:bg-red-700 text-white font-bold h-10 mb-2 flex items-center justify-center" onClick={deleteSelectedElements}>
+            <Trash2 size={16} className="mr-2" /> BORRAR SELECCIONADOS ({selectedIds.length})
+          </Button>
+        )}
+        <Button className="w-full bg-black hover:bg-gray-800 text-white text-xs h-10 font-bold flex items-center justify-center" onClick={handleSave} isLoading={isSaving}>
+          <Save size={14} className="mr-2" /> GUARDAR EN SERVIDOR
+        </Button>
+        <Button variant="secondary" className="w-full text-xs h-9 font-bold flex items-center justify-center" onClick={handleDownloadJSON}>
           <Download size={14} className="mr-2" /> EXPORTAR JSON
         </Button>
       </div>

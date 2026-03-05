@@ -12,6 +12,7 @@ export default function MapEditorPage() {
   const { id } = useParams();
   const [map, setMap] = useState<SeatMap | null>(null);
   const [loading, setLoading] = useState(true);
+    const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchMap = async () => {
@@ -34,7 +35,7 @@ export default function MapEditorPage() {
   if (loading) return (
     <div className="flex flex-col h-screen bg-white">
       <Navbar />
-      <div className="flex-1 flex items-center justify-center font-bold text-gray-300 italic animate-pulse">
+      <div className="flex-1 flex items-center justify-center font-bold text-gray-300 italic animate-pulse uppercase tracking-[0.5em] text-xs">
         Sincronizando editor...
       </div>
     </div>
@@ -43,7 +44,7 @@ export default function MapEditorPage() {
   if (!map) return (
     <div className="flex flex-col h-screen bg-white">
       <Navbar />
-      <div className="flex-1 flex items-center justify-center text-red-400 font-bold uppercase tracking-tighter">
+      <div className="flex-1 flex items-center justify-center text-red-400 font-black uppercase tracking-tighter text-2xl">
         404 - Mapa no encontrado
       </div>
     </div>
@@ -55,11 +56,21 @@ export default function MapEditorPage() {
 
       <div className="flex flex-1 overflow-hidden">
         <main className="flex-1 overflow-auto relative p-12 flex justify-center items-start scrollbar-hide">
-           <SeatMapCanvas map={map} onUpdateMap={handleUpdateMap} />
+           <SeatMapCanvas 
+              map={map} 
+              onUpdateMap={handleUpdateMap} 
+              selectedIds={selectedIds}
+              onSelectionChange={setSelectedIds}
+           />
         </main>
 
         <aside className="w-80 bg-white border-l border-gray-200 shadow-xl z-10 flex flex-col">
-          <Sidebar map={map} onUpdateMap={handleUpdateMap} />
+          <Sidebar 
+            map={map} 
+            onUpdateMap={handleUpdateMap} 
+            selectedIds={selectedIds}
+            onSelectionChange={setSelectedIds}
+          />
         </aside>
       </div>
     </div>
