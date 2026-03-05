@@ -13,7 +13,7 @@ interface SeatMapCanvasProps {
 export const SeatMapCanvas = ({ map, onUpdateMap, selectedIds, onSelectionChange }: SeatMapCanvasProps) => {
   const [activeDrag, setActiveDrag] = useState<{
     elements: { areaId: string; label: string; initialPos: ElementPosition }[];
-    stage?: { initialPos: ElementPosition }; // RESTAURADO: Soporte para arrastrar escenario
+    stage?: { initialPos: ElementPosition }; 
     offset: ElementPosition;
   } | null>(null);
 
@@ -33,7 +33,11 @@ export const SeatMapCanvas = ({ map, onUpdateMap, selectedIds, onSelectionChange
 
   const defaultStage: StageConfig = map.escenario || { forma: 'rectangulo', posicion: { x: 300, y: 50 }, ancho: 400, alto: 100 };
 
-  // RESTAURADO: Función para iniciar el arrastre del escenario
+  // Manejo del nombre del mapa
+  const handleNameChange = (newName: string) => {
+    safeUpdateMap({ ...map, nombre_plano: newName });
+  };
+
   const handleStageMouseDown = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!canvasRef.current) return;
@@ -107,7 +111,6 @@ export const SeatMapCanvas = ({ map, onUpdateMap, selectedIds, onSelectionChange
       const newMap = { ...map };
 
       if (activeDrag.stage) {
-        // RESTAURADO: Arrastre del escenario con límites (clamping)
         newMap.escenario = { 
           ...defaultStage, 
           posicion: { 
@@ -122,7 +125,7 @@ export const SeatMapCanvas = ({ map, onUpdateMap, selectedIds, onSelectionChange
           if (element) {
             element.posicion = { 
               x: Math.max(50, Math.min(850, dragged.initialPos.x + deltaX)), 
-              y: Math.max(50, Math.min(900, dragged.initialPos.y + deltaY)) 
+              y: Math.max(50, Math.min(950, dragged.initialPos.y + deltaY)) 
             };
           }
         });
@@ -183,13 +186,18 @@ export const SeatMapCanvas = ({ map, onUpdateMap, selectedIds, onSelectionChange
     >
       {selectionBox && <div className="absolute border-2 border-blue-500 border-dashed z-50 pointer-events-none" style={{ left: Math.min(selectionBox.startX, selectionBox.currentX), top: Math.min(selectionBox.startY, selectionBox.currentY), width: Math.abs(selectionBox.currentX - selectionBox.startX), height: Math.abs(selectionBox.currentY - selectionBox.startY) }} />}
       
-      <div className="mb-12 text-center pointer-events-none">
-        <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">{map.nombre_plano || 'Sin nombre'}</h2>
+      <div className="mb-12 text-center">
+        <input 
+          type="text"
+          className="text-3xl font-extrabold text-gray-900 tracking-tight bg-transparent border-b-2 border-transparent hover:border-gray-200 focus:border-black focus:outline-none text-center w-full max-w-md transition-colors"
+          value={map.nombre_plano}
+          onChange={(e) => handleNameChange(e.target.value)}
+          placeholder="Nombre del plano..."
+        />
         <div className="h-1 w-20 bg-black mx-auto mt-2 rounded-full" />
       </div>
 
       <div className="relative h-full">
-        {/* ESCENARIO:onMouseDown restaurado para habilitar el arrastre */}
         <div 
           className="absolute border-2 border-dashed border-gray-300 bg-gray-50/80 flex items-center justify-center cursor-grab active:cursor-grabbing hover:border-gray-400 transition-colors shadow-sm z-0" 
           style={{ 

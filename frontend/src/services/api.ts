@@ -56,4 +56,10 @@ export const apiService = {
     
     return res.blob();
   },
+
+  getAllMaps: async (): Promise<SeatMap[]> => {
+    const res = await fetch(`${API_BASE_URL}/maps`);
+    if (!res.ok) throw new Error('Error al obtener mapas');
+    return res.json();
+  },
 };

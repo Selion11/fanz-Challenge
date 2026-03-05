@@ -586,6 +586,33 @@
                 "prompt": "Hay un error que arreglar, no hay limite de filas que se pueda crear... mesas estas salen del canvas.",
                 "notes": "Se aplicaron guard clauses en Sidebar.tsx para respetar los límites de 20 áreas y 50 elementos/área. Se implementó lógica de 'clamping' en SeatMapCanvas.tsx para restringir las coordenadas X/Y de los elementos, evitando que se desplacen fuera de los límites visibles del editor durante el drag-and-drop."
             }
+        },
+        {
+            "entry": {
+                "timestamp": "2026-03-05T19:15:00-03:00",
+                "tool/model": "Gemini 3.1 Pro",
+                "purpose": "Sincronización de lógica de negocio entre Home y Sidebar.",
+                "prompt": "En la homepage cuando creo el mapa desde 0 no tengo las opciones de poner cuantas sillas tiene la fila o la mesa ni sus precios. [Código adjunto]",
+                "notes": "Se refactorizó el componente Home para incluir la lógica de reindexado (consistencia de etiquetas). Se expandió el Modal de creación para permitir la edición de cantidad de asientos y precios unitarios por elemento antes de la navegación al editor, asegurando que el estado inicial del mapa sea válido y completo."
+            }
+        },
+        {
+            "entry": {
+                "timestamp": "2026-03-05T19:25:00-03:00",
+                "tool/model": "Gemini 3.1 Pro",
+                "purpose": "Implementación de UX de seguridad para prevenir pérdida de datos.",
+                "prompt": "Quiero que cuansdo presiono el crear nuevo mapa en la navbar, me pida de confirmar y me avise que perdere los cambios no guaradado si hay un mapa en proceso de crearse.",
+                "notes": "Se integró el hook usePathname en la Navbar para detectar estados de edición activa. Se añadieron diálogos de confirmación (window.confirm) en los flujos de creación de nuevo mapa e importación de JSON cuando el usuario se encuentra dentro de una ruta de edición (/maps/[id])."
+            }
+        },
+        {
+            "entry": {
+                "timestamp": "2026-03-05T19:42:00-03:00",
+                "tool/model": "Gemini 3.1 Pro",
+                "purpose": "Rediseño de la Homepage y mejora del flujo de acceso a datos.",
+                "prompt": "Quiero en la homepage 2 botones en el centro... y que debajo de esos me muestres con tarjetas los nombres de los mapas que estan ya creados.",
+                "notes": "Se modularizó la vista de la Home mediante el componente MapList. Se implementaron llamadas al servicio getAllMaps para visualizar el estado persistido en memoria del servidor. Se duplicaron las acciones principales (Crear/Cargar) en el centro de la página para optimizar la jerarquía visual de la aplicación."
+            }
         }
     ]
 }
