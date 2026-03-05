@@ -39,6 +39,9 @@ npm test
 
 
 # 📐 Decisiones Técnicas y Supuestos
+## Separación de backend y frontend
+El backend y el frontend se encuentran separados y en dos carpetas distintas para mantener modularizado el desarollo del proyecto. Esto permitiria agregar facilmente una base de datos de ser deseado. Se recomienda una base de datos de documentos como MongoDB para poder guardar inmediatamente los archivos .json.
+
 ## Límites de Asientos e Investigación del Teatro Colón
 Durante la fase de diseño, se investigaron las disposiciones de teatros de clase mundial, específicamente el Teatro Colón de Buenos Aires. Se observó lo siguiente para definir los límites de la aplicación:
  - Límites por Fila: Se estableció un máximo de 20 asientos por fila para mantener la legibilidad visual y la gestión de pasillos, similar a las filas de la Platea del Colón.
