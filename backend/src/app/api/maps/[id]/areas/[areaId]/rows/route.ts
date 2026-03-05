@@ -2,14 +2,14 @@ import { NextResponse } from 'next/server';
 import { rowService } from '@/services/rowService';
 
 interface Props {
-  params: {
+  params: Promise<{
     id: string;
     areaId: string;
-  };
+  }>;
 }
 
 export async function POST(request: Request, { params }: Props) {
-  const { id, areaId } = params;
+  const { id, areaId } = await params;
 
   try {
     const body = await request.json();
@@ -32,6 +32,7 @@ export async function POST(request: Request, { params }: Props) {
     if (error.message.includes('encontrad')) {
       return NextResponse.json({ error: error.message }, { status: 404 });
     }
+    
     if (
       error.message.includes('asiento') || 
       error.message.includes('límite') || 
@@ -40,6 +41,7 @@ export async function POST(request: Request, { params }: Props) {
     ) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
+    
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 });
   }
 }

@@ -2,15 +2,15 @@ import { NextResponse } from 'next/server';
 import { rowService } from '@/services/rowService';
 
 interface Props {
-  params: {
+  params: Promise<{
     id: string;
     areaId: string;
     rowLabel: string;
-  };
+  }>;
 }
 
 export async function PUT(request: Request, { params }: Props) {
-  const { id, areaId, rowLabel } = params;
+  const { id, areaId, rowLabel } = await params;
 
   try {
     const body = await request.json();
@@ -25,6 +25,7 @@ export async function PUT(request: Request, { params }: Props) {
     if (error.message.includes('encontrad')) {
       return NextResponse.json({ error: error.message }, { status: 404 });
     }
+    
     if (
       error.message.includes('asiento') || 
       error.message.includes('negativ') || 
@@ -33,12 +34,13 @@ export async function PUT(request: Request, { params }: Props) {
     ) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
+    
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 });
   }
 }
 
 export async function DELETE(request: Request, { params }: Props) {
-  const { id, areaId, rowLabel } = params;
+  const { id, areaId, rowLabel } = await params;
   
   const decodedLabel = decodeURIComponent(rowLabel);
 

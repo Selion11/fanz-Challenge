@@ -1,7 +1,8 @@
 {
-    "prompts":[
+    "project": "SeatMapBuilder",
+    "history":[
         {
-            "input": {
+            "entry": {
                 "timestamp": "2026-03-04T11:50:27-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Confirmar la recepción y aplicación de las directivas de formato",
@@ -10,7 +11,7 @@
             }
         },
         {
-           "input":{
+           "entry":{
                 "timestamp": "2026-03-04T11:58:05-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Inicializar el entorno de desarrollo con Next.js y TypeScript",
@@ -19,7 +20,7 @@
             } 
         },
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T12:05:10-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Definir y validar la estructura JSON de los datos",
@@ -28,7 +29,7 @@
             }
         },
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T12:15:00-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Actualizar la estructura JSON incorporando el campo de precio",
@@ -37,7 +38,7 @@
             }
         },
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T12:17:01-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Definir las interfaces TypeScript (Modelos)",
@@ -46,7 +47,7 @@
             }
         },
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T12:25:30-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Implementar Service y Controller inicial (GET/POST)",
@@ -55,7 +56,7 @@
             }
         },
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T12:28:45-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Implementar operaciones CRUD restantes (GET by ID, PUT, DELETE)",
@@ -64,7 +65,7 @@
             }
         },
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T12:35:12-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Configurar e implementar Unit Testing con Jest",
@@ -73,7 +74,7 @@
             }
         },
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T12:45:10-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Corregir error TS (falta metodo clear) y agregar caso de prueba para validación en update",
@@ -82,7 +83,7 @@
             }
         },
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T12:43:34-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Configurar script de test en package.json y crear archivo .gitignore",
@@ -91,7 +92,7 @@
             }
         },
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T12:48:55-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Añadir soporte de ID a las áreas y crear los métodos CRUD en el servicio",
@@ -100,7 +101,7 @@
             }
         },
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T12:52:45-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Crear un servicio independiente para Áreas con validaciones estrictas",
@@ -109,7 +110,7 @@
             }
         },
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T12:55:00-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Explicar arquitectura de rutas de Next.js e implementar el POST de áreas",
@@ -118,7 +119,7 @@
             }
         },
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T13:00:25-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Implementar rutas dinámicas para Editar y Borrar Áreas",
@@ -127,7 +128,7 @@
             }
         },
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T13:02:46-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Implementar unit testing para la lógica de áreas",
@@ -136,7 +137,7 @@
             }
         }, 
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T13:05:46-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Crear tests E2E/Integración para las rutas de la API de Áreas y Mapas",
@@ -145,7 +146,7 @@
             }
         },
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T13:35:10-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Implementar la lógica de negocio para Mesas (TableService)",
@@ -154,7 +155,7 @@
             }
         },
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T13:35:10-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Implementar la lógica de negocio para Mesas (TableService)",
@@ -163,7 +164,7 @@
             }
         },
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T13:38:00-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Actualizar tableService para permitir cambio de nombre y crear tests unitarios de mesas",
@@ -172,7 +173,7 @@
             }
         },
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T13:40:53-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Crear tests E2E para la lógica de Mesas adoptando un enfoque TDD",
@@ -181,7 +182,7 @@
             }
         },
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T13:46:10-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Crear los controladores (Route Handlers) para la lógica de Mesas",
@@ -190,7 +191,7 @@
             }
         },
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T14:24:15-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Implementar la lógica de negocio para Filas (rowService) con redistribución automática de etiquetas",
@@ -199,7 +200,7 @@
             }
         },
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T14:28:00-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Añadir límite máximo de 20 asientos y crear pruebas unitarias para el servicio de filas",
@@ -208,7 +209,7 @@
             }
         },
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T14:38:00-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Añadir tests E2E para filas y actualizar los de mesas con las nuevas reglas de negocio (TDD)",
@@ -217,7 +218,7 @@
             }
         },
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T14:38:14-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Actualizar servicios con los límites máximos de filas y mesas",
@@ -226,7 +227,7 @@
             }
         },
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T15:05:00-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Implementar creación y eliminación masiva en servicios y tests",
@@ -235,7 +236,7 @@
             }
         },
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T15:15:30-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Añadir auto-eliminación por 0 sillas y redistribución secuencial de etiquetas para mesas",
@@ -244,7 +245,7 @@
             }
         },
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T15:25:00-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Crear los controladores (Route Handlers) para la lógica de Filas",
@@ -253,7 +254,7 @@
             }
         },
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T15:01:49-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Validar el backend actual contra los requerimientos del PDF de la prueba técnica",
@@ -262,7 +263,7 @@
             }
         },
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T15:15:20-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Actualizar los tests unitarios y E2E para soportar el etiquetado individual de sillas y precios no negativos",
@@ -271,7 +272,7 @@
             }
         },
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T15:25:10-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Implementar funcionalidades de Reset, Importar y Exportar requeridas por la consigna",
@@ -280,7 +281,7 @@
             }
         },
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T15:26:00-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Generar el archivo README.md final integrando las tecnologías, instrucciones de test y justificaciones de diseño (Teatro Colón).",
@@ -289,7 +290,7 @@
             }
         },
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T15:27:30-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Consolidar el route.ts principal con soporte CORS y detallar la documentación de rutas en el README",
@@ -298,7 +299,7 @@
             }
         },
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T15:52:15-03:00",
                 "tool/model": "Gemini 3 Flash",
                 "purpose": "Inicializar el proyecto Frontend utilizando create-next-app para cumplir con el stack de React, TypeScript y Next.js.",
@@ -307,7 +308,7 @@
             }
         },
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T16:05:00-03:00",
                 "tool/model": "Gemini 3 Flash",
                 "purpose": "Limpieza de boilerplate de Next.js y sincronización de tipos de datos según los requerimientos de la prueba técnica.",
@@ -316,7 +317,7 @@
             }
         },
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T16:20:10-03:00",
                 "tool/model": "Gemini 3 Flash",
                 "purpose": "Creación del cliente de API base en el frontend para establecer la comunicación con el backend.",
@@ -325,7 +326,7 @@
             }
         },
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T16:32:00-03:00",
                 "tool/model": "Gemini 3.1 Pro",
                 "purpose": "Creación de la página principal (Landing/Dashboard) con opciones de Nuevo Mapa e Importación.",
@@ -334,7 +335,7 @@
             }
         },
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T16:45:12-03:00",
                 "tool/model": "Gemini 3 Flash",
                 "purpose": "Creación de la base de componentes UI reutilizables (Atoms/Molecules) para el frontend.",
@@ -343,7 +344,7 @@
             }
         },
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T16:30:15-03:00",
                 "tool/model": "Gemini 3 Flash",
                 "purpose": "Implementación del formulario dinámico de creación de mapas en la página principal utilizando componentes reutilizables.",
@@ -352,7 +353,7 @@
             }
         },
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T16:43:00-03:00",
                 "tool/model": "Gemini 3 Flash",
                 "purpose": "Implementación de la funcionalidad de carga de mapas desde archivos JSON locales.",
@@ -361,7 +362,7 @@
             }
         },
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T16:40:15-03:00",
                 "tool/model": "Gemini 3 Flash",
                 "purpose": "Corrección de CORS en el backend y lógica de nomenclatura de elementos en el frontend.",
@@ -370,16 +371,16 @@
             }
         },
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T16:55:00-03:00",
                 "tool/model": "Gemini 3.1 Pro",
-                "purpose": "Corregir bloqueos de CORS en el endpoint de creación y solucionar la reactividad del input de precio mediante actualizaciones inmutables.",
+                "purpose": "Corregir bloqueos de CORS en el endpoint de creación y solucionar la reactividad del entry de precio mediante actualizaciones inmutables.",
                 "prompt": "Soluciona el error de CORS al intentar de crear un mapa y soluciona el precio ya que no me deja cambiarlo de 0",
                 "notes": "Se integró applyCors en el manejador de POST /api/maps. Se refactorizó el manejo de estado en page.tsx para evitar mutaciones directas en objetos anidados, lo que impedía que React re-renderizara el valor del precio."
             }   
         }, 
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T17:15:45-03:00",
                 "tool/model": "Gemini 3 Flash",
                 "purpose": "Ajuste de la lógica de navegación post-creación para alinear el flujo con la estructura de Seats.io.",
@@ -389,7 +390,7 @@
         }
         ,
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T17:20:00-03:00",
                 "tool/model": "Gemini 3 Flash",
                 "purpose": "Diseño de la página del editor /maps/[id] y componentes visuales reactivos para filas y mesas.",
@@ -398,7 +399,7 @@
             }
         },
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T17:25:30-03:00",
                 "tool/model": "Gemini 3 Flash",
                 "purpose": "Implementación del componente SeatMapCanvas para organizar y renderizar áreas y elementos en el editor.",
@@ -407,7 +408,7 @@
             }
         },
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T17:30:00-03:00",
                 "tool/model": "Gemini 3 Flash",
                 "purpose": "Creación de la Sidebar de edición dinámica y funcionalidad de exportación JSON.",
@@ -416,7 +417,7 @@
             }
         },
         {
-           "input":{
+           "entry":{
                 "timestamp": "2026-03-04T17:45:00-03:00",
                 "tool/model": "Gemini 3 Flash",
                 "purpose": "Expansión de la Sidebar para permitir la creación dinámica de Áreas, Filas y Mesas, e implementación de mejoras de UX (cursor pointer).",
@@ -425,7 +426,7 @@
             }
         },
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T17:31:00-03:00",
                 "tool/model": "Gemini 3 Flash",
                 "purpose": "Reestructuración estética y funcional de la Sidebar con soporte de colores por área y tarjetas anidadas.",
@@ -434,7 +435,7 @@
             }
         },
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T17:39:00-03:00",
                 "tool/model": "Gemini 3 Flash",
                 "purpose": "Estabilización del backend y limpieza visual del canvas.",
@@ -443,7 +444,7 @@
             }
         },
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T18:00:21-03:00",
                 "tool/model": "Gemini 3 Flash",
                 "purpose": "Implementación de límites de capacidad y lógica de eliminación por cantidad cero en la Sidebar.",
@@ -452,7 +453,7 @@
             }
         },
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T18:13:00-03:00",
                 "tool/model": "Gemini 3 Flash",
                 "purpose": "Refactorización de la arquitectura de navegación y carga mediante la extracción de Navbar.tsx.",
@@ -461,7 +462,7 @@
             }
         },
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T18:22:28-03:00",
                 "tool/model": "Gemini 3 Flash",
                 "purpose": "Inclusión de información contextual del área en el hover de los elementos del mapa.",
@@ -470,7 +471,7 @@
             }
         },
         {
-            "input":{
+            "entry":{
                 "timestamp": "2026-03-04T18:27:00-03:00",
                 "tool/model": "Gemini 3 Flash",
                 "purpose": "Creación de script de automatización para despliegue local de frontend y backend.",

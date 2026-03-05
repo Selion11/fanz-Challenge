@@ -33,7 +33,6 @@ export const RowVisual = ({ element, color, areaName }: RowVisualProps) => {
                 e.currentTarget.style.backgroundColor = 'transparent';
                 e.currentTarget.style.color = 'inherit';
               }}
-              // Tooltip con información contextual completa
               title={`Área: ${areaName}\nFila: ${element.etiqueta}\nAsiento: ${asiento.identificador || idx + 1}\nPrecio: $${element.precio}`}
             >
               <span className="text-[8px] font-bold">{asiento.identificador || idx + 1}</span>

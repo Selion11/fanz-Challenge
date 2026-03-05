@@ -2,14 +2,13 @@ import { NextResponse } from 'next/server';
 import { areaService } from '@/services/areaService';
 
 interface Props {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
-
 export async function POST(request: Request, { params }: Props) {
-  const { id } = params;
+  const { id } = await params;
 
   try {
     const body = await request.json();

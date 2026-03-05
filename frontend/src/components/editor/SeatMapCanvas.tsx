@@ -17,7 +17,6 @@ export const SeatMapCanvas = ({ map }: SeatMapCanvasProps) => {
       </div>
 
       <div className="space-y-24">
-        {/* Escenario en la parte superior del mapa */}
         <div className="mt-8 border-2 border-dashed border-gray-200 rounded-2xl p-6 text-center bg-gray-50/30">
           <span className="text-sm font-black text-gray-300 uppercase tracking-[0.7em]">
             ESCENARIO / STAGE
@@ -33,13 +32,13 @@ export const SeatMapCanvas = ({ map }: SeatMapCanvasProps) => {
                     <RowVisual 
                       element={elemento} 
                       color={area.color || '#000000'}
-                      areaName={area.nombre_area} // Inyectamos el nombre del área
+                      areaName={area.nombre_area}
                     />
                   ) : (
                     <TableVisual 
                       element={elemento} 
                       color={area.color || '#000000'}
-                      areaName={area.nombre_area} // Inyectamos el nombre del área
+                      areaName={area.nombre_area} 
                     />
                   )}
                 </div>

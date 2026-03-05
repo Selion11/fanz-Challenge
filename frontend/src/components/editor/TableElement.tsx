@@ -16,7 +16,6 @@ export const TableVisual = ({ element, color, areaName }: TableVisualProps) => {
       className="relative flex items-center justify-center group" 
       style={{ width: chairDistance * 2.5, height: chairDistance * 2.5 }}
     >
-      {/* Centro de la mesa */}
       <div 
         style={{ 
           width: tableRadius * 2, 
@@ -30,7 +29,6 @@ export const TableVisual = ({ element, color, areaName }: TableVisualProps) => {
         <span className="text-[10px] font-black">{element.etiqueta}</span>
       </div>
 
-      {/* Sillas distribuidas radialmente */}
       {element.sillas?.map((silla, idx) => {
         const angle = (idx * 2 * Math.PI) / sillaCount - Math.PI / 2;
         const x = Math.cos(angle) * chairDistance;
@@ -47,7 +45,6 @@ export const TableVisual = ({ element, color, areaName }: TableVisualProps) => {
             }}
             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = color}
             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'white'}
-            // Tooltip con información contextual completa
             title={`Área: ${areaName}\nMesa: ${element.etiqueta}\nSilla: ${idx + 1}\nPrecio: $${element.precio}`}
           />
         );

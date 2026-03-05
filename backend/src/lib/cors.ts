@@ -1,12 +1,24 @@
 import { NextResponse } from 'next/server';
 
-export function applyCors(res: NextResponse) {
-  res.headers.set('Access-Control-Allow-Origin', '*');
-  res.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  return res;
+const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || 'http://localhost:3000';
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': FRONTEND_ORIGIN,
+  'Access-Control-Allow-Methods': 'GET, HEAD, PUT, PATCH, POST, DELETE, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  'Access-Control-Allow-Credentials': 'true',
+};
+
+export function applyCors(response: NextResponse) {
+  Object.entries(corsHeaders).forEach(([key, value]) => {
+    response.headers.set(key, value);
+  });
+  return response;
 }
 
-export function corsOptionsHandler() {
-  return applyCors(new NextResponse(null, { status: 204 }));
-}
+export const corsOptionsHandler = async () => {
+  return new NextResponse(null, {
+    status: 204,
+    headers: corsHeaders,
+  });
+};

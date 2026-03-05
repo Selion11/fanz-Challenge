@@ -2,15 +2,14 @@ import { NextResponse } from 'next/server';
 import { areaService } from '@/services/areaService';
 
 interface Props {
-  params: {
+  params: Promise<{
     id: string;      
     areaId: string; 
-  };
+  }>;
 }
 
-
 export async function PUT(request: Request, { params }: Props) {
-  const { id, areaId } = params;
+  const { id, areaId } = await params;
 
   try {
     const body = await request.json();
@@ -30,7 +29,7 @@ export async function PUT(request: Request, { params }: Props) {
 }
 
 export async function DELETE(request: Request, { params }: Props) {
-  const { id, areaId } = params;
+  const { id, areaId } = await params;
 
   const success = areaService.deleteArea(id, areaId);
 
