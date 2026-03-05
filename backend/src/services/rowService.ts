@@ -30,7 +30,13 @@ export const rowService = {
      return rows[0];
   },
 
-  createMultipleRows: (mapId: string, areaId: string, data: { cantidad: number, cantidad_asientos: number, precio?: number }): RowElement[] => {
+  createMultipleRows: (mapId: string, areaId: string, data: { 
+    cantidad: number, 
+    cantidad_asientos: number, 
+    precio?: number,
+    curvatura?: number
+    rotacion?: number 
+  }): RowElement[] => {
     const map = seatMapService.getById(mapId);
     if (!map) throw new Error('Mapa no encontrado');
 
@@ -51,7 +57,6 @@ export const rowService = {
     }
 
     const createdRows: RowElement[] = [];
-    // Calculamos la posición de la primera fila del lote
     let currentY = rowService._calculateNextPosition(area.elementos).y;
 
     for (let i = 0; i < data.cantidad; i++) {
@@ -60,13 +65,13 @@ export const rowService = {
             etiqueta: '', 
             precio: data.precio || 0,
             asientos: rowService._generateSeats(data.cantidad_asientos),
-            // Asignamos posición única para evitar solapamiento
-            posicion: { x: 50, y: currentY } 
+            posicion: { x: 50, y: currentY },
+            curvatura: data.curvatura || 0,
+            rotacion: data.rotacion || 0 
         };
         area.elementos.push(newRow);
         createdRows.push(newRow);
         
-        // Incrementamos el desplazamiento vertical para la siguiente fila del lote
         currentY += 80;
     }
     
@@ -74,7 +79,18 @@ export const rowService = {
     return createdRows;
   },
 
-  updateRow: (mapId: string, areaId: string, rowLabel: string, data: { cantidad_asientos?: number, precio?: number, posicion?: ElementPosition }): RowElement | { deleted: true } => {
+  updateRow: (
+    mapId: string, 
+    areaId: string, 
+    rowLabel: string, 
+    data: { 
+      cantidad_asientos?: number, 
+      precio?: number, 
+      posicion?: ElementPosition,
+      curvatura?: number,
+      rotacion?: number
+    }
+  ): RowElement | { deleted: true } => {
     const map = seatMapService.getById(mapId);
     if (!map) throw new Error('Mapa no encontrado');
 
@@ -97,7 +113,7 @@ export const rowService = {
     const existingRow = area.elementos[rowIndex] as RowElement;
 
     if (data.cantidad_asientos !== undefined && data.cantidad_asientos < 0) {
-        throw new Error('La cantidad de asientos no puede ser negativa');
+      throw new Error('La cantidad de asientos no puede ser negativa');
     }
 
     if (data.cantidad_asientos !== undefined && data.cantidad_asientos > 20) {
@@ -106,15 +122,16 @@ export const rowService = {
 
     let nuevosAsientos = existingRow.asientos;
     if (data.cantidad_asientos !== undefined && data.cantidad_asientos !== existingRow.asientos.length) {
-        nuevosAsientos = rowService._generateSeats(data.cantidad_asientos);
+      nuevosAsientos = rowService._generateSeats(data.cantidad_asientos);
     }
 
     const updatedRow: RowElement = {
       ...existingRow,
       precio: data.precio ?? existingRow.precio,
       asientos: nuevosAsientos,
-      // Persistimos la nueva posición tras el arrastre
-      posicion: data.posicion ?? existingRow.posicion 
+      posicion: data.posicion ?? existingRow.posicion,
+      curvatura: data.curvatura ?? existingRow.curvatura,
+      rotacion: data.rotacion ?? existingRow.rotacion 
     };
 
     area.elementos[rowIndex] = updatedRow;

@@ -19,6 +19,8 @@ export interface BaseElement {
 export interface RowElement extends BaseElement {
   tipo: 'fila';
   asientos: Seat[];
+  curvatura: number;
+  rotacion: number;
 }
 
 export interface TableElement extends BaseElement {

@@ -496,6 +496,33 @@
                 "prompt": "El drag deberia ser continuo, deberia seguir al mouse y se deberia ver como el elemento (agarrado debajo del mouse) lo sigue continuamente y deja de seguir al desclickear. Ya vez que se suelta el mouse ahi se acutaliza la posicion del elemento",
                 "notes": "Se introdujo un estado activeDrag para gestionar coordenadas locales a 60fps. Se implementó lógica de offset para evitar saltos visuales y se configuró la persistencia en el evento onMouseUp."
             }
+        },
+        {
+            "entry":{
+                "timestamp": "2026-03-05T16:44:11-03:00",
+                "tool/model": "Gemini 3 Flash",
+                "purpose": "Mejora de la jerarquía visual mediante áreas colapsables en la Sidebar y badges de área en el Canvas.",
+                "prompt": "ahora quiero que al lado de los nombres de las filas (etiquetas tambien aparezca el area al que pertenece cada fila para tener claridad visual. En la sidebar quiero que cada area se pueda colapsar para no ver lo que esta dentro si asi lo deseo y poder tener una vista mas clara de todas las areas juntas.",
+                "notes": "Se integró el estado collapsedAreas en la Sidebar para mejorar la gestión del espacio. Se actualizó RowVisual para inyectar el nombre del área sobre la etiqueta de la fila, proporcionando contexto geográfico inmediato."
+            }
+        },
+        {
+            "entry":{
+                "timestamp": "2026-03-05T16:47:30-03:00",
+                "tool/model": "Gemini 3 Flash",
+                "purpose": "Implementación de geometría de arco y rotación para elementos de tipo fila.",
+                "prompt": "Ahora quiero que las filas se puedan curvar, es decir los asientos se puedan poner como si siguieran la circumferencia de un circulo y que se puedan rotar.",
+                "notes": "Se introdujeron cálculos de trigonometría polar en RowVisual.tsx. Se añadieron controles deslizantes en la Sidebar para manipular curvatura y rotación en tiempo real con persistencia en el estado del mapa."
+            }
+        },
+        {
+            "entry":{
+                "timestamp": "2026-03-05T16:53:00-03:00",
+                "tool/model": "Gemini 3 Flash",
+                "purpose": "Ajuste de jerarquía visual y matemática de rotación grupal para elementos del mapa.",
+                "prompt": "Los carteles estan aparenciendo encima de los asientos y quiero que la rotacion de los asientos sea de todos a la vez. Es decir que si la fila esta mirando para el escenario puedo rotarla para que mire 90 grados para cualquier lado.",
+                "notes": "Se reposicionaron las etiquetas (handles) con translate(-50%, -150%) para evitar solapamientos. Se corrigió la rotación en RowVisual y TableVisual para pivotar el grupo entero, permitiendo orientaciones de 90° o cualquier ángulo relativo al escenario."
+            }
         }
     ]
 }
