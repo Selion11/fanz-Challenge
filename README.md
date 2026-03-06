@@ -17,8 +17,8 @@ Para facilitar el despliegue de ambos entornos (Frontend y Backend), el reposito
     ```bash
     ./run.sh
     ```
-    * **Frontend**: [http://localhost:3000](http://localhost:3000) (Next.js).
-    * **Backend**: [http://localhost:8080](http://localhost:8080) (Node.js Express / Next API).
+    * **Frontend**: [http://localhost:3000](http://localhost:3000) 
+    * **Backend**: [http://localhost:8080](http://localhost:8080)
 
 ## 🛠️ Tecnologías Utilizadas
 
