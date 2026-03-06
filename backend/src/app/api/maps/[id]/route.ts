@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { seatMapService } from '@/services/seatMapService';
 import { SeatMap } from '@/model/types';
+
 interface Props {
   params: Promise<{
     id: string;
@@ -37,10 +38,8 @@ export async function PUT(request: Request, { params }: Props) {
     const updatedMap = seatMapService.update(id, body);
 
     if (!updatedMap) {
-      return NextResponse.json(
-        { error: 'Mapa no encontrado para editar' }, 
-        { status: 404 }
-      );
+      const restoredMap = seatMapService.importMap({ ...body, id });
+      return NextResponse.json(restoredMap);
     }
 
     return NextResponse.json(updatedMap);

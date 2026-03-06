@@ -19,13 +19,11 @@ export const Navbar = ({ onNewMap }: NavbarProps) => {
   const pathname = usePathname();
   const [loading, setLoading] = useState(false);
   
-  // Nuevo estado para el modal interno de la Navbar
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [draftMap, setDraftMap] = useState<SeatMap>({ nombre_plano: '', areas: [] });
 
   const isEditing = pathname.includes('/maps/');
 
-  // Lógica de ayuda para el draft (igual que en Home)
   const reindexElements = (elements: MapElement[]): MapElement[] => {
     let rowCount = 0; let tableCount = 0;
     return elements.map((el) => el.tipo === 'fila' 
@@ -65,26 +63,38 @@ export const Navbar = ({ onNewMap }: NavbarProps) => {
     }
     
     if (onNewMap) {
-      onNewMap(); // Si estamos en Home, usamos el del padre
+      onNewMap(); 
     } else {
-      setDraftMap({ nombre_plano: '', areas: [] }); // Reset draft
-      setIsModalOpen(true); // Si estamos en /maps/[id], abrimos este
+      setDraftMap({ nombre_plano: '', areas: [] }); 
+      setIsModalOpen(true); 
     }
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (isEditing && !window.confirm('¿Cargar nuevo archivo? Perderás cambios locales.')) return;
+const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+  
+  if (isEditing && !window.confirm('¿Cargar nuevo archivo? Perderás cambios locales.')) {
+    e.target.value = ''; // Reset del input si cancela
+    return;
+  }
 
-    const reader = new FileReader();
+  const reader = new FileReader();
     reader.onload = async (event) => {
       try {
         setLoading(true);
         const json = JSON.parse(event.target?.result as string);
+        
         const imported = await apiService.importMap(json);
+        
         router.push(`/maps/${imported.id}`);
-      } catch (err) { alert('Error en JSON'); } finally { setLoading(false); }
+        
+      } catch (err) { 
+        alert('Error en la importación: ' + (err instanceof Error ? err.message : 'JSON inválido')); 
+      } finally { 
+        setLoading(false); 
+        e.target.value = '';
+      }
     };
     reader.readAsText(file);
   };

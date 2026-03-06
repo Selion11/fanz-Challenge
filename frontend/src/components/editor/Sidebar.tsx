@@ -179,9 +179,16 @@ export const Sidebar = ({ map, onUpdateMap, selectedIds, onSelectionChange }: Si
     if (!map.id) return alert('Error de ID');
     setIsSaving(true);
     try {
-      await apiService.updateMap(map.id, map);
+      const mapActualizado = await apiService.updateMap(map.id, map);
+      
+      onUpdateMap(mapActualizado); 
+      
       alert('¡Mapa guardado con éxito!');
-    } catch (err) { alert('Error al guardar'); } finally { setIsSaving(false); }
+    } catch (err) { 
+      alert('Error al guardar'); 
+    } finally { 
+      setIsSaving(false); 
+    }
   };
 
   const deleteSelectedElements = () => {

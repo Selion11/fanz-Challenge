@@ -14,21 +14,32 @@ export const apiService = {
   },
 
   getMapById: async (id: string): Promise<SeatMap> => {
-    const res = await fetch(`${API_BASE_URL}/maps/${id}`);
+    const res = await fetch(`${API_BASE_URL}/maps/${id}`, { cache: 'no-store' });
     if (!res.ok) throw new Error('Mapa no encontrado');
     return res.json();
   },
 
-  importMap: async (mapData: any): Promise<SeatMap> => {
-    const res = await fetch(`${API_BASE_URL}/maps/system?action=import`, {
+  importMap: async (json: any): Promise<SeatMap> => {
+    const res = await fetch(`${API_BASE_URL}/maps`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(mapData),
+      body: JSON.stringify(json),
     });
-    if (!res.ok) {
-      const error = await res.json();
-      throw new Error(error.error || 'Error al importar el mapa');
+
+    if (!res.ok && (res.status === 409 || res.status === 400)) {
+      const updateRes = await fetch(`${API_BASE_URL}/maps/${json.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(json),
+      });
+
+      if (!updateRes.ok) throw new Error('Error al sobrescribir el mapa existente');
+      
+      return updateRes.json();
     }
+
+    if (!res.ok) throw new Error('Error al importar el mapa');
+
     return res.json();
   },
   
@@ -58,7 +69,7 @@ export const apiService = {
   },
 
   getAllMaps: async (): Promise<SeatMap[]> => {
-    const res = await fetch(`${API_BASE_URL}/maps`);
+    const res = await fetch(`${API_BASE_URL}/maps`, { cache: 'no-store' });
     if (!res.ok) throw new Error('Error al obtener mapas');
     return res.json();
   },

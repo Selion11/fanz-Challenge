@@ -613,6 +613,33 @@
                 "prompt": "Quiero en la homepage 2 botones en el centro... y que debajo de esos me muestres con tarjetas los nombres de los mapas que estan ya creados.",
                 "notes": "Se modularizó la vista de la Home mediante el componente MapList. Se implementaron llamadas al servicio getAllMaps para visualizar el estado persistido en memoria del servidor. Se duplicaron las acciones principales (Crear/Cargar) en el centro de la página para optimizar la jerarquía visual de la aplicación."
             }
+        },
+        {
+            "entry": {
+                "timestamp": "2026-03-06T10:55:00-03:00",
+                "tool/model": "Gemini 3 Flash",
+                "purpose": "Corrección de persistencia en la importación de archivos.",
+                "prompt": "Cuando importo un .json y el mapa ya existe en memoria, no me lee los cambios del .json sino que levanta el mapa de memoria. Quiero que cuando subas un .json sobree escribas lo que tenga en memoria (el mapa con ese id) con lo que se sube del .json",
+                "notes": "Se modificó apiService.importMap para implementar una estrategia de UPSERT. Si el POST inicial falla por duplicidad de ID, el sistema ahora ejecuta un PUT automático para garantizar que los cambios contenidos en el archivo JSON prevalezcan sobre el estado previo en memoria."
+            }
+        },
+        {
+            "entry": {
+                "timestamp": "2026-03-06T11:05:00-03:00",
+                "tool/model": "Gemini 3 Flash",
+                "purpose": "Corrección de colisión de IDs y forzado de UPSERT en backend.",
+                "prompt": "Cuando subo el .json en lugar de sobre escribirse el mapa existente se crea un mapa nuevo... Quiero que usando el id de mapa que esta en el .json se updatee el mapa ya existente.",
+                "notes": "Se identificó que el backend estaba ignorando el ID del payload de importación. Se propuso modificar el repositorio para que la operación de guardado funcione como un UPSERT directo, priorizando el ID provisto en el JSON sobre la generación automática de claves."
+            }
+        },
+        {
+            "entry": {
+                "timestamp": "2026-03-06T12:05:00-03:00",
+                "tool/model": "Gemini 3 Flash",
+                "purpose": "Corrección de persistencia redundante en el flujo de guardado.",
+                "prompt": "Ahora cada vez que guardo el mapa se crea uno nuevo con un id distinto al cambiar el nombre. No deberia ser asi.",
+                "notes": "Se identificó que el cliente estaba invocando erróneamente el método de creación en lugar de actualización. Se instruyó el uso del método PUT a través de apiService.updateMap vinculado al ID de la ruta activa para garantizar la idempotencia de la operación de guardado."
+            }
         }
     ]
 }

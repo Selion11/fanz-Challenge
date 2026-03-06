@@ -50,14 +50,21 @@ export const seatMapService = {
     if (!fullMap.nombre_plano || !Array.isArray(fullMap.areas)) {
       throw new Error('Estructura de mapa inválida');
     }
-    
-    const newMap: SeatMap = {
+
+    const existingIndex = maps.findIndex(m => m.id === fullMap.id);
+
+    const mapToPersist: SeatMap = {
       ...fullMap,
-      id: fullMap.id || randomUUID() 
+      id: fullMap.id || randomUUID()
     };
-    
-    maps.push(newMap);
-    return newMap;
+
+    if (existingIndex !== -1) {
+      maps[existingIndex] = mapToPersist;
+    } else {
+      maps.push(mapToPersist);
+    }
+
+    return mapToPersist;
   },
 
   clear: (): void => {
