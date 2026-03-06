@@ -21,6 +21,7 @@ trap cleanup SIGINT
 # 1. Iniciar el Backend
 echo -e "${GREEN}📡 Levantando Backend en carpeta /backend...${NC}"
 cd backend
+npm install
 npm run dev & 
 BACKEND_PID=$!
 cd ..
@@ -28,6 +29,7 @@ cd ..
 # 2. Iniciar el Frontend
 echo -e "${GREEN}💻 Levantando Frontend en la raíz...${NC}"
 cd frontend
+npm install
 npm run dev &
 FRONTEND_PID=$!
 
